@@ -5,7 +5,7 @@ extends Node2D
 # var a = 2
 # var b = "text"
 
-var c = Color(241, 255, 173)
+var c = Color(50, 255, 173)
 export var radius = 30
 export var width = 2
 var zero_vector = Vector2()
@@ -17,4 +17,4 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _draw():
-    draw_arc(zero_vector, radius, 0, PI/1.5, 10, c, width, true)
+    draw_arc(zero_vector, radius, -PI/2, PI/2, 10, c, width, true)
