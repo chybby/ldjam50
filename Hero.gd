@@ -6,6 +6,7 @@ onready var GameMap = get_parent()
 
 enum {STATE_NONE, STATE_SHIELD, STATE_WEAPON, STATE_MOVE}
 var active_state = STATE_NONE
+var max_move_distance = 2
 
 var shield_angle = 0
 
@@ -39,12 +40,12 @@ func _process(delta):
     # - weapon
     # - move
     if active_state == STATE_NONE:
-        get_node("KinematicBody2D/Shield").visible = false
+        $Shield.visible = false
         return
     if active_state == STATE_SHIELD:
 #		# get mouse position
 #		# display shield dome relatively
-        var shield = $KinematicBody2D/Shield
+        var shield = $Shield
         shield.visible = true
         shield.rotation = shield_angle
 
@@ -53,6 +54,7 @@ func _process(delta):
 #		# cursor with attack icon?
     if active_state == STATE_MOVE:
         # get position on grid
-        GameMap.draw_valid_moves(self.position)
+        GameMap.draw_valid_moves(self.position, max_move_distance)
+        
 
 #		# display valid move blocks?

@@ -13,11 +13,11 @@ func _ready():
 
 func draw_valid_moves(position, max_distance):
     var cellv = world_to_map(position)
-    for x in range(-max_distance, max_distance):
-        for y in range(-max_distance, max_distance):
+    for x in range(-max_distance, max_distance+1):
+        for y in range(-max_distance, max_distance+1):
             if x == 0 and y == 0:
                 continue
-            set_cell(cellv.x-x, cellv.y-y, 1)
+            set_cell(cellv.x+x, cellv.y+y, 1)
 
 func get_grid():
     var grid = []
@@ -31,6 +31,11 @@ func get_grid():
 
     for enemy in enemies:
         grid[enemy.map_position.x][enemy.map_position.y].append(enemy)
+
+func init_hero():
+    var pos = Vector2(7, 7)
+    hero.map_position = pos
+    hero.position = map_to_world(pos)
 
 func move_hero(position):
     hero.map_position = position
@@ -69,6 +74,10 @@ func mouse_down():
 func _input(event):
     if event is InputEventMouseButton:
         if event.pressed:
+            if hero.active_state == hero.STATE_MOVE:
+                move_hero(world_to_map(event.position))
+                clear()
+                hero.active_state = hero.STATE_NONE
             mouse_down()
         else:
             mouse_up()

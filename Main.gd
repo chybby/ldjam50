@@ -7,7 +7,7 @@ var enemy_scene = preload('res://Enemy.tscn')
 onready var game_map = $GameMap
 
 func _ready():
-    game_map.move_hero(Vector2(7, 7))
+    game_map.init_hero()
 
     spawn_enemies()
     enemies_plan_moves()
