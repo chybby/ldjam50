@@ -1,14 +1,8 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://Background.tscn" type="PackedScene" id=2]
 [ext_resource path="res://GameMap.tscn" type="PackedScene" id=3]
-[ext_resource path="res://ship.png" type="Texture" id=4]
-[ext_resource path="res://Hero.gd" type="Script" id=5]
-[ext_resource path="res://Shield.gd" type="Script" id=6]
-
-[sub_resource type="CircleShape2D" id=3]
-radius = 14.0357
 
 [node name="Game" type="Node2D"]
 script = ExtResource( 1 )
@@ -16,22 +10,6 @@ script = ExtResource( 1 )
 [node name="Background" parent="." instance=ExtResource( 2 )]
 
 [node name="GameMap" parent="." instance=ExtResource( 3 )]
-
-[node name="Hero" type="Node2D" parent="GameMap"]
-position = Vector2( -30, 100 )
-script = ExtResource( 5 )
-
-[node name="KinematicBody2D" type="KinematicBody2D" parent="GameMap/Hero"]
-
-[node name="Ship" type="Sprite" parent="GameMap/Hero/KinematicBody2D"]
-texture = ExtResource( 4 )
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="GameMap/Hero/KinematicBody2D"]
-position = Vector2( 0, 4 )
-shape = SubResource( 3 )
-
-[node name="Shield" type="Node2D" parent="GameMap/Hero/KinematicBody2D"]
-script = ExtResource( 6 )
 
 [node name="Turn Choice Menu" type="Control" parent="."]
 margin_right = 40.0

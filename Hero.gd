@@ -2,6 +2,7 @@ extends Node2D
 
 
 var map_position
+onready var GameMap = get_parent()
 
 enum {STATE_NONE, STATE_SHIELD, STATE_WEAPON, STATE_MOVE}
 var active_state = STATE_NONE
@@ -20,6 +21,14 @@ func _input(event):
         pass
     elif event is InputEventMouseMotion:
         shield_angle = self.get_angle_to(event.position)
+        if shield_angle < PI/2:
+            shield_angle = 0
+        elif shield_angle < PI:
+            shield_angle = PI/2
+        elif shield_angle < 1.5*PI:
+            shield_angle = PI
+        else:
+            shield_angle = 1.5*PI
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -37,9 +46,11 @@ func _process(delta):
         shield.visible = true
         shield.rotation = shield_angle
 
-
 #	if active_state == STATE_WEAPON:
 #		# display weapons primed?
 #		# cursor with attack icon?
-#	if active_state == STATE_MOVE:
+    if active_state == STATE_MOVE:
+        # get position on grid
+        GameMap.valid_moves(self.position)
+
 #		# display valid move blocks?

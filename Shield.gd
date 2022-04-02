@@ -5,9 +5,10 @@ extends Node2D
 # var a = 2
 # var b = "text"
 
-var c = Color(50, 255, 173)
+export (Color,RGB) var c = Color(50/255.0, 255/255.0, 173/255.0)
 export var radius = 30
 export var width = 2
+export var pts = 5
 var zero_vector = Vector2()
 
 # Called when the node enters the scene tree for the first time.
@@ -17,4 +18,4 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _draw():
-    draw_arc(zero_vector, radius, -PI/2, PI/2, 10, c, width, true)
+    draw_arc(zero_vector, radius, -PI/2, PI/2, pts, c, width, true)

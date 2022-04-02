@@ -34,6 +34,14 @@ func place_enemy(enemy, position):
 
     enemy.position = map_to_world(position)
 
+#func draw_valid_moves(position, max_distance):
+#    var cellv = world_to_map(position)
+#    for x in range(-max_distance, max_distance):
+#        for y in range(-max_distance, max_distance):
+#            if x == 0 and y == 0:
+#                continue
+#            set_cell(cellv.x-x, cellv.y-y, )
+
 func mouse_changed_cell(old_position, new_position):
     if old_position != null:
         set_cell(old_position.x, old_position.y, -1)
