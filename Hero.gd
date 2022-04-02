@@ -18,6 +18,8 @@ func _ready():
 func _input(event):
     if Input.is_action_pressed("choose_shield"):
         active_state = STATE_SHIELD
+    elif Input.is_action_pressed("choose_move"):
+        active_state = STATE_MOVE
     
     if event is InputEventMouseButton:
         pass
@@ -52,6 +54,6 @@ func _process(delta):
 #		# cursor with attack icon?
     if active_state == STATE_MOVE:
         # get position on grid
-        GameMap.valid_moves(self.position)
+        GameMap.draw_valid_moves(self.position)
         
 #		# display valid move blocks?
