@@ -24,16 +24,23 @@ func mouse_hover(position):
 
     mouse_changed_cell(old_hovered_position, hovered_position)
 
+func mouse_up():
+    if hovered_position == null:
+        return
+
+func mouse_down():
+    if hovered_position == null:
+        return
+
 func _input(event):
     if event is InputEventMouseButton:
-        pass
+        if event.pressed:
+            mouse_down()
+        else:
+            mouse_up()
     elif event is InputEventMouseMotion:
         mouse_hover(world_to_map(event.position))
 
-#func _notification(event):
-#    if event.
-#        mouse_hover(null)
-
-func _on_Control_mouse_exited():
-    print("mouse left screen")
-    mouse_hover(null)
+func _notification(event):
+    if event == NOTIFICATION_WM_MOUSE_EXIT:
+        mouse_hover(null)
