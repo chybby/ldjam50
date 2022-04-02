@@ -1,9 +1,7 @@
 extends Node2D
 
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
+var map_position
 
 enum {STATE_NONE, STATE_SHIELD, STATE_WEAPON, STATE_MOVE}
 var active_state = STATE_NONE
@@ -17,7 +15,7 @@ func _ready():
 func _input(event):
     if Input.is_action_pressed("choose_shield"):
         active_state = STATE_SHIELD
-    
+
     if event is InputEventMouseButton:
         pass
     elif event is InputEventMouseMotion:
@@ -38,8 +36,8 @@ func _process(delta):
         var shield = $KinematicBody2D/Shield
         shield.visible = true
         shield.rotation = shield_angle
-        
-        
+
+
 #	if active_state == STATE_WEAPON:
 #		# display weapons primed?
 #		# cursor with attack icon?

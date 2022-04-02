@@ -5,8 +5,34 @@ var height = get_used_rect().size.y
 
 var hovered_position = null
 
+onready var hero = $Hero
+var enemies = {}
+
 func _ready():
     clear()
+
+func get_grid():
+    var grid = []
+    for x in width:
+        var row = []
+        for y in height:
+            row.append([])
+        grid.append(row)
+
+    grid[hero.map_position.x][hero.map_position.y].append(hero)
+
+    for enemy in enemies:
+        grid[enemy.map_position.x][enemy.map_position.y].append(enemy)
+
+func move_hero(position):
+    hero.map_position = position
+    hero.position = map_to_world(position)
+
+func place_enemy(enemy, position):
+    enemies[position] = enemy
+    enemy.map_position = position
+
+    enemy.position = map_to_world(position)
 
 func mouse_changed_cell(old_position, new_position):
     if old_position != null:
