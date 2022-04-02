@@ -1,9 +1,7 @@
 extends Node2D
 
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
+var map_position
 onready var GameMap = get_parent()
 
 enum {STATE_NONE, STATE_SHIELD, STATE_WEAPON, STATE_MOVE}
@@ -48,7 +46,8 @@ func _process(delta):
 #		# display shield dome relatively
         var shield = $KinematicBody2D/Shield
         shield.visible = true
-        shield.rotation = shield_angle    
+        shield.rotation = shield_angle
+
 #	if active_state == STATE_WEAPON:
 #		# display weapons primed?
 #		# cursor with attack icon?
