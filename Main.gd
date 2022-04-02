@@ -10,18 +10,24 @@ func _ready():
     game_map.move_hero(Vector2(7, 7))
 
     spawn_enemies()
-    enemies_plan_moves()
+    enemies_telegraph_actions()
 
     # Hero's turn
 
 func spawn_enemies():
     var enemy = enemy_scene.instance()
+    enemy.game_map = game_map
     add_child(enemy)
     game_map.place_enemy(enemy, Vector2(7, 2))
 
-func enemies_plan_moves():
+    enemy = enemy_scene.instance()
+    enemy.game_map = game_map
+    add_child(enemy)
+    game_map.place_enemy(enemy, Vector2(9, 5))
+
+func enemies_telegraph_actions():
     for enemy in game_map.enemies.values():
-        enemy.plan_move()
+        enemy.telegraph_action()
 
 func do_enemy_turn():
     pass

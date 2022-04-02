@@ -9,10 +9,6 @@ var active_state = STATE_NONE
 
 var shield_angle = 0
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-    pass # Replace with function body.
-
 func _input(event):
     if Input.is_action_pressed("choose_shield"):
         active_state = STATE_SHIELD
@@ -22,29 +18,31 @@ func _input(event):
     if event is InputEventMouseButton:
         pass
     elif event is InputEventMouseMotion:
-        shield_angle = self.get_angle_to(event.position)
-        if shield_angle < PI/2:
-            shield_angle = 0
-        elif shield_angle < PI:
-            shield_angle = PI/2
-        elif shield_angle < 1.5*PI:
+        shield_angle = $ShieldPosition.get_angle_to(event.position)
+        print(shield_angle)
+        if shield_angle < -3*PI/4:
             shield_angle = PI
+        elif shield_angle < -PI/4:
+            shield_angle = -PI/2
+        elif shield_angle < PI/4:
+            shield_angle = 0
+        elif shield_angle < 3*PI/4:
+            shield_angle = PI/2
         else:
-            shield_angle = 1.5*PI
+            shield_angle = PI
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
     # 3 options for displaying currently selected thingo:
     # - shield
     # - weapon
     # - move
     if active_state == STATE_NONE:
-        get_node("KinematicBody2D/Shield").visible = false
+        $Shield.visible = false
         return
     if active_state == STATE_SHIELD:
 #		# get mouse position
 #		# display shield dome relatively
-        var shield = $KinematicBody2D/Shield
+        var shield = $Shield
         shield.visible = true
         shield.rotation = shield_angle
 

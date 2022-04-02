@@ -19,18 +19,18 @@ func draw_valid_moves(position, max_distance):
                 continue
             set_cell(cellv.x-x, cellv.y-y, 1)
 
-func get_grid():
-    var grid = []
-    for x in width:
-        var row = []
-        for y in height:
-            row.append([])
-        grid.append(row)
-
-    grid[hero.map_position.x][hero.map_position.y].append(hero)
-
-    for enemy in enemies:
-        grid[enemy.map_position.x][enemy.map_position.y].append(enemy)
+#func get_grid():
+#    var grid = []
+#    for x in width:
+#        var row = []
+#        for y in height:
+#            row.append([])
+#        grid.append(row)
+#
+#    grid[hero.map_position.x][hero.map_position.y].append(hero)
+#
+#    for enemy in enemies:
+#        grid[enemy.map_position.x][enemy.map_position.y].append(enemy)
 
 func move_hero(position):
     hero.map_position = position
