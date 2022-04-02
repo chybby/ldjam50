@@ -1,0 +1,39 @@
+extends TileMap
+
+var width = get_used_rect().size.x
+var height = get_used_rect().size.y
+
+var hovered_position = null
+
+func _ready():
+    clear()
+
+func mouse_changed_cell(old_position, new_position):
+    if old_position != null:
+        set_cell(old_position.x, old_position.y, -1)
+
+    if new_position != null:
+        set_cell(new_position.x, new_position.y, 0)
+
+func mouse_hover(position):
+    if position == hovered_position:
+        return
+
+    var old_hovered_position = hovered_position
+    hovered_position = position
+
+    mouse_changed_cell(old_hovered_position, hovered_position)
+
+func _input(event):
+    if event is InputEventMouseButton:
+        pass
+    elif event is InputEventMouseMotion:
+        mouse_hover(world_to_map(event.position))
+
+#func _notification(event):
+#    if event.
+#        mouse_hover(null)
+
+func _on_Control_mouse_exited():
+    print("mouse left screen")
+    mouse_hover(null)
