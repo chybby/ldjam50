@@ -10,15 +10,15 @@ var active_state = STATE_NONE
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+    pass # Replace with function body.
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	# 3 options for displaying currently selected thingo:
-	# - shield
-	# - weapon
-	# - move
+    # 3 options for displaying currently selected thingo:
+    # - shield
+    # - weapon
+    # - move
 #	if active_state == STATE_NONE:
 #		return
 #	if active_state == STATE_SHIELD:
@@ -29,5 +29,5 @@ func _process(delta):
 #		# cursor with attack icon?
 #	if active_state == STATE_MOVE:
 #		# display valid move blocks?
-	pass
-	
+    pass
+    
