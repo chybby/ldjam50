@@ -1,4 +1,4 @@
-extends Node2D
+extends Sprite
 
 
 var map_position
@@ -18,7 +18,7 @@ func _input(event):
         active_state = STATE_SHIELD
     elif Input.is_action_pressed("choose_move"):
         active_state = STATE_MOVE
-    
+
     if event is InputEventMouseButton:
         pass
     elif event is InputEventMouseMotion:
@@ -54,5 +54,5 @@ func _process(delta):
     if active_state == STATE_MOVE:
         # get position on grid
         GameMap.draw_valid_moves(self.position)
-        
+
 #		# display valid move blocks?
