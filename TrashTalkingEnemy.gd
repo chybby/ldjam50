@@ -8,9 +8,9 @@ var lines = [
 
 func telegraph_action(turn):
     if randi() % 2 == 0:
-        planned_action = actions.MOVE
+        planned_action = action.MOVE
     else:
-        planned_action = actions.NOTHING
+        planned_action = action.NOTHING
 
 func do_action():
     if randi() % 5 == 0:
@@ -29,7 +29,7 @@ func do_action():
         $SpeechBubble.visible = true
         $Timer.start()
 
-    if planned_action == actions.MOVE:
+    if planned_action == action.MOVE:
         var vms = game_map.get_valid_moves(map_position, 1)[0]
         if len(vms) == 0:
             return

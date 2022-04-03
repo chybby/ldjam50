@@ -6,12 +6,12 @@ signal energy_changed(new_energy)
 
 var map_position
 
-enum {STATE_NONE, STATE_SHIELD, STATE_WEAPON, STATE_MOVE}
-var active_state = STATE_NONE
-var previous_state = STATE_NONE
+enum state {NONE, SHIELD, WEAPON, MOVE}
+var active_state = state.NONE
+var previous_state = state.NONE
 var max_move_distance = 1
 
-enum actions {MOVE, ATTACK_LINE, NOTHING, CHANGE_SHIELD}
+#enum action {MOVE, ATTACK_LINE, NOTHING, CHANGE_SHIELD}
 
 onready var game_map = get_parent()
 
@@ -44,20 +44,20 @@ func _input(event):
         return
 
     if Input.is_action_pressed("choose_shield"):
-        active_state = STATE_SHIELD
+        active_state = state.SHIELD
         $ValidThingos.clear()
     elif Input.is_action_pressed("choose_move"):
-        active_state = STATE_MOVE
+        active_state = state.MOVE
         $ValidThingos.clear()
         var vms = game_map.get_valid_moves(map_position, 1)[1]
         draw_valid_moves(vms)
     elif Input.is_action_pressed("choose_weapon"):
-        active_state = STATE_WEAPON
+        active_state = state.WEAPON
         $ValidThingos.clear()
         var vas = get_valid_line_attacks(map_position, $Sprite.rotation)
         draw_valid_attacks(vas)
 
-    if event is InputEventMouseMotion and active_state == STATE_SHIELD:
+    if event is InputEventMouseMotion and active_state == state.SHIELD:
         shield_angle_select = get_shield_angle(event.position)
 
 func get_shield_angle(position):
@@ -93,7 +93,7 @@ func _process(delta):
     # - shield
     # - weapon
     # - move
-    if active_state == STATE_SHIELD:
+    if active_state == state.SHIELD:
 #		# get mouse position
 #		# display shield dome relatively
         $Shield.rotation = shield_angle_select
@@ -102,13 +102,13 @@ func _process(delta):
         $Shield.rotation = shield_angle
         $Shield.unselect()
 
-    if active_state == STATE_NONE:
+    if active_state == state.NONE:
         $ValidThingos.clear()
 
-#	if active_state == STATE_WEAPON:
+#	if active_state == state.WEAPON:
 #		# display weapons primed?
 #		# cursor with attack icon?
-#    if active_state == STATE_MOVE:
+#    if active_state == state.MOVE:
         # get position on grid
 
 func get_valid_line_attacks(position, rotation):
@@ -136,16 +136,10 @@ func is_valid_attack(clicked_map_position) -> bool:
 
 func _on_GameMap_cell_clicked(clicked_map_position):
     var action_done = false
-    if active_state == STATE_MOVE:
+    if active_state == state.MOVE:
         if not game_map.is_valid_move(map_position, clicked_map_position, 1):
             game_map.input_enabled = true
             return
-
-        if previous_state == STATE_WEAPON:
-            $Sprite/LaserBeam.play('Fire', true)
-            yield($Sprite/LaserBeam, 'animation_finished')
-            $Sprite/LaserBeam.visible = false
-            $Sprite/LaserBeam.get_node('Area2D/CollisionShape2D').disabled = true
 
         var look_vector = game_map.map_to_world(clicked_map_position) - position
         game_map.move_hero(clicked_map_position)
@@ -155,20 +149,20 @@ func _on_GameMap_cell_clicked(clicked_map_position):
         use_energy(10)
 
         action_done = true
-        active_state = STATE_NONE
-        previous_state = STATE_MOVE
-    elif active_state == STATE_SHIELD:
+        active_state = state.NONE
+        previous_state = state.MOVE
+    elif active_state == state.SHIELD:
         if shield_angle != shield_angle_select:
             shield_angle = shield_angle_select
             action_done = true
-        active_state = STATE_NONE
-        previous_state = STATE_SHIELD
-    elif active_state == STATE_WEAPON:
+        active_state = state.NONE
+        previous_state = state.SHIELD
+    elif active_state == state.WEAPON:
         if not is_valid_attack(clicked_map_position):
             game_map.input_enabled = true
             return
 
-        active_state = STATE_NONE
+        active_state = state.NONE
         var look_vector = game_map.map_to_world(clicked_map_position) - position
         $Sprite.look_at(position + look_vector + Vector2(32, 32))
         $Sprite.rotation += PI/2
@@ -178,7 +172,12 @@ func _on_GameMap_cell_clicked(clicked_map_position):
         yield($Sprite/LaserBeam, 'animation_finished')
         $Sprite/LaserBeam.get_node('Area2D/CollisionShape2D').disabled = false
         $Sprite/LaserBeam.play('Persist')
-        previous_state = STATE_WEAPON
+        yield(get_tree().create_timer(1.0), 'timeout')
+        $Sprite/LaserBeam.play('Fire', true)
+        yield($Sprite/LaserBeam, 'animation_finished')
+        $Sprite/LaserBeam.visible = false
+        $Sprite/LaserBeam.get_node('Area2D/CollisionShape2D').disabled = true
+        previous_state = state.WEAPON
         action_done = true
 
     if action_done:

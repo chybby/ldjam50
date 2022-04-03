@@ -2,7 +2,7 @@ extends Node2D
 
 var map_position: Vector2
 
-enum actions {MOVE, ATTACK, NOTHING}
+enum action {MOVE, ATTACK, NOTHING}
 
 onready var game_map = get_parent()
 
@@ -14,7 +14,6 @@ func telegraph_action(turn):
 
 func do_action():
     pass
-
 
 func _on_Area2D_area_entered(area):
     game_map.enemies.erase(map_position)

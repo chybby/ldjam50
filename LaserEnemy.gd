@@ -11,23 +11,23 @@ func _ready():
 
 func telegraph_action(turn):
     if turn == 0:
-        planned_action = actions.ATTACK
+        planned_action = action.ATTACK
         var laser = $LaserBeamDown
         active_lasers.append(laser)
         yield(play_laser_telegraph(laser), 'completed')
         return
 
-    if previous_action == actions.ATTACK:
+    if previous_action == action.ATTACK:
         if randi() % 2 == 0:
-            planned_action = actions.MOVE
+            planned_action = action.MOVE
         else:
-            planned_action = actions.NOTHING
+            planned_action = action.NOTHING
     else:
         var random = randi() % 3
         if random == 0:
-            planned_action = actions.MOVE
+            planned_action = action.MOVE
         elif random == 1:
-            planned_action = actions.ATTACK
+            planned_action = action.ATTACK
             active_lasers.clear()
             for laser in all_lasers:
                 if randi() % 2 == 0:
@@ -41,7 +41,7 @@ func telegraph_action(turn):
                 if result.is_valid():
                     yield(result, 'completed')
         elif random == 2:
-            planned_action = actions.NOTHING
+            planned_action = action.NOTHING
 
 func play_laser_telegraph(laser):
     laser.visible = true
@@ -63,7 +63,7 @@ func play_laser_outro(laser):
     laser.visible = false
 
 func do_action():
-    if previous_action == actions.ATTACK:
+    if previous_action == action.ATTACK:
         var results = []
         for laser in active_lasers:
             results.append(play_laser_outro(laser))
@@ -72,13 +72,13 @@ func do_action():
             if result.is_valid():
                 yield(result, 'completed')
 
-    if planned_action == actions.MOVE:
+    if planned_action == action.MOVE:
         var vms = game_map.get_valid_moves(map_position, 1)[0]
         if len(vms) == 0:
             return
         var next_pos = vms[randi() % vms.size()]
         game_map.move_enemy(self, next_pos)
-    elif planned_action == actions.ATTACK:
+    elif planned_action == action.ATTACK:
         var results = []
         for laser in active_lasers:
             results.append(play_laser_fire(laser))
@@ -87,3 +87,10 @@ func do_action():
             if result.is_valid():
                 yield(result, 'completed')
     previous_action = planned_action
+
+func _on_Area2D_area_entered(area):
+    # TODO: dunno what the while stuff is when a laser enemy dies.
+    for laser in all_lasers:
+        laser.stop()
+        laser.visible = false
+    ._on_Area2D_area_entered(area)
