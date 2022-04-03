@@ -36,11 +36,9 @@ func setup_game():
     if result is GDScriptFunctionState:
         yield(result, 'completed')
 
-    print('Input enabled')
     game_map.input_enabled = true
 
 func _on_Hero_move_finished():
-    print('Input disabled')
     game_map.input_enabled = false
 
     var result = enemies_do_actions()
@@ -53,11 +51,9 @@ func _on_Hero_move_finished():
     if result is GDScriptFunctionState:
         yield(result, 'completed')
 
-    print('Input enabled')
     game_map.input_enabled = true
 
 func _on_Hero_died():
-    print('Input disabled')
     game_map.input_enabled = false
     map_ui.visible = false
     game_over_ui_turn_text.text = "You lasted " + str(turn) + " turns"
@@ -79,21 +75,18 @@ func spawn_enemies():
         print('Turn number %s, desired enemies %s, current enemies %s' % [turn, desired_enemies, num_enemies])
         print('Enemies to spawn: ', max(desired_enemies - num_enemies, 0))
         for i in max(desired_enemies - num_enemies, 0):
-            print('Spawning new enemy')
             var enemy = enemy_scene.instance()
             # TODO: place enemies in random spots
             game_map.place_enemy(enemy, Vector2(7, 2))
 
 func enemies_telegraph_actions():
     for enemy in game_map.enemies.values():
-        print('Enemy telegraphs actions')
         var result = enemy.telegraph_action()
         if result is GDScriptFunctionState:
             yield(result, 'completed')
 
 func enemies_do_actions():
     for enemy in game_map.enemies.values():
-        print('Enemy does actions')
         var result = enemy.do_action()
         if result is GDScriptFunctionState:
             yield(result, 'completed')

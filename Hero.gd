@@ -60,9 +60,6 @@ func get_shield_angle(position):
 func is_shield_pointing_at_enemy(enemy):
     var shield_vector = Vector2.RIGHT.rotated(shield_angle)
     var hero_to_enemy = enemy.position - position
-    print('shield vector ', shield_vector)
-    print('hero_to_enemy ', hero_to_enemy)
-    print('angle ', hero_to_enemy.angle_to(shield_vector))
     return int(hero_to_enemy.angle_to(shield_vector)) == 0
 
 func _process(delta):
@@ -99,7 +96,6 @@ func _on_GameMap_cell_clicked(position):
         var is_valid = game_map.move_hero(position)
         if not is_valid:
             return
-        print(self.position + look_vector)
         $Sprite.look_at(self.position + look_vector + Vector2(32, 32))
         $Sprite.rotation += PI/2
         energy -= 10
