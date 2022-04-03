@@ -13,7 +13,7 @@ func telegraph_action(turn):
         planned_action = actions.NOTHING
 
 func do_action():
-    if 1:#randi() % 5 == 0:
+    if randi() % 5 == 0:
         $SpeechBubble.position = Vector2(235, -39)
         $SpeechBubble.flip_h = false
         $SpeechBubble.flip_v = false
@@ -21,7 +21,7 @@ func do_action():
             $SpeechBubble.position.x *= -1
             $SpeechBubble.position.x += 64
             $SpeechBubble.flip_h = true
-        if map_position.y > game_map.height/2:
+        if map_position.y < game_map.height/2:
             $SpeechBubble.position.y *= -1
             $SpeechBubble.position.y += 64
             $SpeechBubble.flip_v = true
@@ -30,7 +30,11 @@ func do_action():
         $Timer.start()
 
     if planned_action == actions.MOVE:
-        pass
+        var vms = game_map.get_valid_moves(map_position, 1)[0]
+        if len(vms) == 0:
+            return
+        var next_pos = vms[randi() % vms.size()]
+        game_map.move_enemy(self, next_pos)
 
 func _on_Timer_timeout():
     $SpeechBubble.visible = false

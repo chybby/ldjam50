@@ -74,6 +74,8 @@ func do_action():
 
     if planned_action == actions.MOVE:
         var vms = game_map.get_valid_moves(map_position, 1)[0]
+        if len(vms) == 0:
+            return
         var next_pos = vms[randi() % vms.size()]
         game_map.move_enemy(self, next_pos)
     elif planned_action == actions.ATTACK:

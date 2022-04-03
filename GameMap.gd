@@ -94,4 +94,5 @@ func _input(event):
 
     if event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
         if not event.pressed:
+            input_enabled = false
             mouse_down(event.position)

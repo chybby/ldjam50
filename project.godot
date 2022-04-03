@@ -54,6 +54,12 @@ choose_move={
  ]
 }
 
+[layer_names]
+
+2d_physics/layer_1="Hero and Enemies"
+2d_physics/layer_2="Weapons"
+2d_physics/layer_3="Pickups"
+
 [physics]
 
 common/enable_pause_aware_picking=true

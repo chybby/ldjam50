@@ -24,6 +24,7 @@ func setup_game():
     game_map.hero.get_node('Sprite').rotation = 0
     game_map.hero.shield_angle = -PI/2
     game_map.hero.get_node('Shield').visible = true
+    game_map.hero.get_node('Sprite/LaserBeam').visible = false
 
     energy_resource.min_value = 0
     energy_resource.max_value = game_map.hero.starting_energy
@@ -45,8 +46,6 @@ func setup_game():
     game_map.input_enabled = true
 
 func _on_Hero_move_finished():
-    game_map.input_enabled = false
-
     var result = enemies_do_actions()
     if result is GDScriptFunctionState:
         yield(result, 'completed')
@@ -66,7 +65,7 @@ func _on_Hero_move_finished():
 func _on_Hero_died():
     game_map.input_enabled = false
     map_ui.visible = false
-    game_over_ui_turn_text.text = "You lasted " + str(turn) + " turns"
+    game_over_ui_turn_text.text = "You lasted %s turns" % turn
     game_over_ui.visible = true
 
 func _on_Hero_energy_changed(energy):
