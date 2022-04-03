@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/trash_talking_enemy-scaled.png-3bc1e7d0fc0cf77866cf40b27c67986b.stex"
+path="res://.import/valid_attack-scaled3.png-3a9bea43ee5e0030d20c7e741a3ff405.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://trash_talking_enemy-scaled.png"
-dest_files=[ "res://.import/trash_talking_enemy-scaled.png-3bc1e7d0fc0cf77866cf40b27c67986b.stex" ]
+source_file="res://valid_attack-scaled3.png"
+dest_files=[ "res://.import/valid_attack-scaled3.png-3a9bea43ee5e0030d20c7e741a3ff405.stex" ]
 
 [params]
 

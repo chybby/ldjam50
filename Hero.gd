@@ -23,15 +23,16 @@ export var starting_energy = 100
 var energy = starting_energy
 
 func draw_valid_moves(valid_moves):
-    _draw_valids(valid_moves, 0)
+    _draw_valids(valid_moves, 1)
 
 func draw_valid_attacks(valid_attacks):
-    _draw_valids(valid_attacks, 1)
+    _draw_valids(valid_attacks, 0)
 
 func _draw_valids(valids, i):
-    var tile_set = $ValidThingos
+    var tile_map = $ValidThingos
     for v in valids:
-        tile_set.set_cell(v.x, v.y, i)
+        tile_map.set_cellv(v, i)
+    tile_map.update_bitmask_region()
 
 func clear_valid_thingos():
     $ValidThingos.clear()
@@ -54,7 +55,7 @@ func _input(event):
     elif Input.is_action_pressed("choose_weapon"):
         active_state = state.WEAPON
         $ValidThingos.clear()
-        var vas = get_valid_line_attacks(map_position, $Sprite.rotation)
+        var vas = get_valid_line_attacks(map_position)
         draw_valid_attacks(vas)
 
     if event is InputEventMouseMotion and active_state == state.SHIELD:
@@ -89,13 +90,7 @@ func use_energy(energy_used):
         $Shield.visible = false
 
 func _process(delta):
-    # 3 options for displaying currently selected thingo:
-    # - shield
-    # - weapon
-    # - move
     if active_state == state.SHIELD:
-#		# get mouse position
-#		# display shield dome relatively
         $Shield.rotation = shield_angle_select
         $Shield.select()
     else:
@@ -105,19 +100,14 @@ func _process(delta):
     if active_state == state.NONE:
         $ValidThingos.clear()
 
-#	if active_state == state.WEAPON:
-#		# display weapons primed?
-#		# cursor with attack icon?
-#    if active_state == state.MOVE:
-        # get position on grid
 
-func get_valid_line_attacks(position, rotation):
+func get_valid_line_attacks(position):
     var valid_moves_rel = []
     for y in range(-1, -position.y-1, -1):
         valid_moves_rel.append(Vector2(0, y))
-    for x in range(1, game_map.width):
+    for x in range(1, game_map.width - position.x):
         valid_moves_rel.append(Vector2(x, 0))
-    for y in range(1, game_map.height):
+    for y in range(1, game_map.height - position.y):
         valid_moves_rel.append(Vector2(0, y))
     for x in range(-1, -position.x-1, -1):
         valid_moves_rel.append(Vector2(x, 0))
@@ -125,7 +115,7 @@ func get_valid_line_attacks(position, rotation):
     return valid_moves_rel
 
 func is_valid_attack(clicked_map_position) -> bool:
-    var vas = get_valid_line_attacks(position, rotation)
+    var vas = get_valid_line_attacks(map_position)
     var found = false
     for v in vas:
         v += map_position
@@ -166,17 +156,20 @@ func _on_GameMap_cell_clicked(clicked_map_position):
         var look_vector = game_map.map_to_world(clicked_map_position) - position
         $Sprite.look_at(position + look_vector + Vector2(32, 32))
         $Sprite.rotation += PI/2
+
+        # Firing the lazar blarrrrr!
         $Sprite/LaserBeam.visible = true
         $Sprite/LaserBeam.stop()
         $Sprite/LaserBeam.play('Fire')
         yield($Sprite/LaserBeam, 'animation_finished')
         $Sprite/LaserBeam.get_node('Area2D/CollisionShape2D').disabled = false
         $Sprite/LaserBeam.play('Persist')
-        yield(get_tree().create_timer(1.0), 'timeout')
+        yield(get_tree().create_timer(0.5), 'timeout')
         $Sprite/LaserBeam.play('Fire', true)
         yield($Sprite/LaserBeam, 'animation_finished')
         $Sprite/LaserBeam.visible = false
         $Sprite/LaserBeam.get_node('Area2D/CollisionShape2D').disabled = true
+
         previous_state = state.WEAPON
         action_done = true
 
