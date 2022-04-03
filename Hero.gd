@@ -54,7 +54,7 @@ func _input(event):
     elif Input.is_action_pressed("choose_weapon"):
         active_state = STATE_WEAPON
         $ValidThingos.clear()
-        var vas = game_map.get_valid_line_attacks(map_position, $Sprite.rotation)
+        var vas = get_valid_line_attacks(map_position, $Sprite.rotation)
         draw_valid_attacks(vas)
 
 
@@ -111,6 +111,20 @@ func _process(delta):
 #		# cursor with attack icon?
 #    if active_state == STATE_MOVE:
         # get position on grid
+        
+func get_valid_line_attacks(position, rotation):
+    var valid_moves_rel = []
+    for y in range(-1, -position.y-1, -1):
+        valid_moves_rel.append(Vector2(0, y))
+    for x in range(1, game_map.width):
+        valid_moves_rel.append(Vector2(x, 0))
+    for y in range(1, game_map.height):
+        valid_moves_rel.append(Vector2(0, y))
+    for x in range(-1, -position.x-1, -1):
+        valid_moves_rel.append(Vector2(x, 0))
+        
+    print(valid_moves_rel)
+    return valid_moves_rel
 
 func _on_GameMap_cell_clicked(position):
     var action_done = false
