@@ -123,7 +123,6 @@ func get_valid_line_attacks(position, rotation):
     for x in range(-1, -position.x-1, -1):
         valid_moves_rel.append(Vector2(x, 0))
         
-    print(valid_moves_rel)
     return valid_moves_rel
 
 func _on_GameMap_cell_clicked(clicked_map_position):
