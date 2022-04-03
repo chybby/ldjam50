@@ -54,7 +54,7 @@ func _input(event):
     elif Input.is_action_pressed("choose_weapon"):
         active_state = STATE_WEAPON
         $ValidThingos.clear()
-        var vas = game_map.get_valid_line_attacks(map_position, $Sprite.rotation)
+        var vas = get_valid_line_attacks(map_position, $Sprite.rotation)
         draw_valid_attacks(vas)
 
 
@@ -111,6 +111,29 @@ func _process(delta):
 #		# cursor with attack icon?
 #    if active_state == STATE_MOVE:
         # get position on grid
+        
+func get_valid_line_attacks(position, rotation):
+    var valid_moves_rel = []
+    for y in range(-1, -position.y-1, -1):
+        valid_moves_rel.append(Vector2(0, y))
+    for x in range(1, game_map.width):
+        valid_moves_rel.append(Vector2(x, 0))
+    for y in range(1, game_map.height):
+        valid_moves_rel.append(Vector2(0, y))
+    for x in range(-1, -position.x-1, -1):
+        valid_moves_rel.append(Vector2(x, 0))
+
+    return valid_moves_rel
+    
+func is_valid_attack(clicked_map_position) -> bool:
+    var vas = get_valid_line_attacks(position, rotation)
+    var found = false
+    for v in vas:
+        v += map_position
+        if clicked_map_position == v:
+            found = true
+            break
+    return found
 
 func _on_GameMap_cell_clicked(clicked_map_position):
     var action_done = false
@@ -141,7 +164,13 @@ func _on_GameMap_cell_clicked(clicked_map_position):
         active_state = STATE_NONE
         previous_state = STATE_SHIELD
     elif active_state == STATE_WEAPON:
+        if not is_valid_attack(clicked_map_position):
+            return
+            
         active_state = STATE_NONE
+        var look_vector = game_map.map_to_world(clicked_map_position) - position
+        $Sprite.look_at(position + look_vector + Vector2(32, 32))
+        $Sprite.rotation += PI/2
         $Sprite/LaserBeam.visible = true
         $Sprite/LaserBeam.get_node('Area2D/CollisionShape2D').disabled = false
         $Sprite/LaserBeam.stop()
