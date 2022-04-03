@@ -2,13 +2,20 @@ extends Sprite
 
 
 var map_position
-onready var GameMap = get_parent()
 
 enum {STATE_NONE, STATE_SHIELD, STATE_WEAPON, STATE_MOVE}
 var active_state = STATE_NONE
-var max_move_distance = 2
+var max_move_distance = 1
 
 var shield_angle = 0
+
+func draw_valid_moves(valid_moves):
+    var tile_set = $ValidMoves
+    for v in valid_moves:
+        tile_set.set_cell(v.x, v.y, 0)
+        
+func clear_valid_moves():
+    $ValidMoves.clear()
 
 func _input(event):
     if Input.is_action_pressed("choose_shield"):
@@ -20,7 +27,6 @@ func _input(event):
         pass
     elif event is InputEventMouseMotion:
         shield_angle = $ShieldPosition.get_angle_to(event.position)
-        print(shield_angle)
         if shield_angle < -3*PI/4:
             shield_angle = PI
         elif shield_angle < -PI/4:
@@ -50,9 +56,5 @@ func _process(delta):
 #	if active_state == STATE_WEAPON:
 #		# display weapons primed?
 #		# cursor with attack icon?
-    if active_state == STATE_MOVE:
+#    if active_state == STATE_MOVE:
         # get position on grid
-        GameMap.draw_valid_moves(self.position, max_move_distance)
-        
-
-#		# display valid move blocks?

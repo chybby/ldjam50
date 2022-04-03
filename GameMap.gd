@@ -12,12 +12,25 @@ func _ready():
     clear()
 
 func draw_valid_moves(position, max_distance):
-    var cellv = world_to_map(position)
+    var vms = get_valid_moves(position, max_distance)[1]
+    for v in vms:
+        hero.draw_valid_moves(vms)
+
+func get_valid_moves(position, max_distance):
+    # TODO: any need for < 0, > screen width check?
+    var valid_moves = []
+    var valid_moves_rel = []
     for x in range(-max_distance, max_distance+1):
         for y in range(-max_distance, max_distance+1):
             if x == 0 and y == 0:
                 continue
-            set_cell(cellv.x+x, cellv.y+y, 1)
+            var newx = position.x+x
+            var newy = position.y+y
+            if newx < 0 or newy < 0 or newx >= width or newy >= height:
+                continue
+            valid_moves.append(Vector2(newx, newy))
+            valid_moves_rel.append(Vector2(x, y))
+    return [valid_moves, valid_moves_rel]
 
 #func get_grid():
 #    var grid = []
@@ -31,13 +44,21 @@ func draw_valid_moves(position, max_distance):
 #
 #    for enemy in enemies:
 #        grid[enemy.map_position.x][enemy.map_position.y].append(enemy)
-
-func init_hero():
-    var pos = Vector2(7, 7)
-    hero.map_position = pos
-    hero.position = map_to_world(pos)
+    
+func set_hero(position):
+    hero.map_position = position
+    hero.position = map_to_world(position)
 
 func move_hero(position):
+    var valid_moves = get_valid_moves(hero.map_position, 1)[0]
+    var is_valid = false
+    for v in valid_moves:
+        if position == v:
+            is_valid = true
+            break
+    if not is_valid:
+        return
+    
     hero.map_position = position
     hero.position = map_to_world(position)
 
@@ -70,19 +91,21 @@ func mouse_up():
 func mouse_down():
     if hovered_position == null:
         return
-
+        
+func _process(delta):
+    if hero.active_state == hero.STATE_NONE:
+        hero.clear_valid_moves()
+    if hero.active_state == hero.STATE_MOVE:
+        draw_valid_moves(world_to_map(hero.position), 1)
+        
 func _input(event):
     if event is InputEventMouseButton:
         if event.pressed:
             if hero.active_state == hero.STATE_MOVE:
                 move_hero(world_to_map(event.position))
-                clear()
                 hero.active_state = hero.STATE_NONE
-            mouse_down()
-        else:
-            mouse_up()
-    elif event is InputEventMouseMotion:
-        mouse_hover(world_to_map(event.position))
+#    elif event is InputEventMouseMotion:
+#        mouse_hover(game_map.world_to_map(event.position))
 
 func _notification(event):
     if event == NOTIFICATION_WM_MOUSE_EXIT:
