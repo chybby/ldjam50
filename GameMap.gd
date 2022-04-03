@@ -67,7 +67,7 @@ func place_enemy(enemy, position):
     enemy.map_position = position
 
     enemy.position = map_to_world(position)
-    
+
 func clear_enemies():
     for enemy in enemies.values():
         remove_child(enemy)
@@ -91,5 +91,5 @@ func _input(event):
     if event is InputEventMouseButton:
         if not event.pressed:
             mouse_down(event.position)
-    
-    
+
+

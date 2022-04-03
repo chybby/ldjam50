@@ -53,12 +53,14 @@ func play_laser_telegraph(laser):
 func play_laser_fire(laser):
     laser.play('Fire')
     yield(laser, 'animation_finished')
+    laser.get_node('Area2D/CollisionShape2D').disabled = false
     laser.play('Persist')
 
 func play_laser_outro(laser):
     # Play the firing animation backwards.
     laser.play('Fire', true)
     yield(laser, 'animation_finished')
+    laser.get_node('Area2D/CollisionShape2D').disabled = true
     laser.visible = false
 
 #    var tile_map = $Attacks

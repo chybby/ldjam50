@@ -108,10 +108,14 @@ animation = "Fire"
 centered = false
 
 [node name="Area2D" type="Area2D" parent="LaserBeamRight"]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LaserBeamRight/Area2D"]
 position = Vector2( 448, 32 )
 shape = SubResource( 28 )
+disabled = true
 
 [node name="LaserBeamUp" type="AnimatedSprite" parent="."]
 visible = false
@@ -121,10 +125,14 @@ animation = "Fire"
 centered = false
 
 [node name="Area2D" type="Area2D" parent="LaserBeamUp"]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LaserBeamUp/Area2D"]
 position = Vector2( 448, 32 )
 shape = SubResource( 28 )
+disabled = true
 
 [node name="LaserBeamLeft" type="AnimatedSprite" parent="."]
 visible = false
@@ -135,10 +143,14 @@ animation = "Fire"
 centered = false
 
 [node name="Area2D" type="Area2D" parent="LaserBeamLeft"]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LaserBeamLeft/Area2D"]
 position = Vector2( 448, 32 )
 shape = SubResource( 28 )
+disabled = true
 
 [node name="LaserBeamDown" type="AnimatedSprite" parent="."]
 visible = false
@@ -149,10 +161,14 @@ animation = "Fire"
 centered = false
 
 [node name="Area2D" type="Area2D" parent="LaserBeamDown"]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="LaserBeamDown/Area2D"]
 position = Vector2( 448, 32 )
 shape = SubResource( 28 )
+disabled = true
 
 [connection signal="animation_finished" from="LaserBeamRight" to="." method="_on_LaserBeam_animation_finished"]
 [connection signal="animation_finished" from="LaserBeamUp" to="." method="_on_LaserBeam_animation_finished"]
