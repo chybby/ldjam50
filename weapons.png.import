@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/laser-scaled.png-5aa212d1b0ed4bf75115872a5354c3e6.stex"
+path="res://.import/weapons.png-4b70e97e5d83a6db27f68dea8efbd57e.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://laser-scaled.png"
-dest_files=[ "res://.import/laser-scaled.png-5aa212d1b0ed4bf75115872a5354c3e6.stex" ]
+source_file="res://weapons.png"
+dest_files=[ "res://.import/weapons.png-4b70e97e5d83a6db27f68dea8efbd57e.stex" ]
 
 [params]
 
@@ -20,7 +20,7 @@ compress/hdr_mode=0
 compress/bptc_ldr=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

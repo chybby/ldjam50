@@ -44,8 +44,8 @@ func get_valid_moves(position, max_distance):
 #
 #    for enemy in enemies:
 #        grid[enemy.map_position.x][enemy.map_position.y].append(enemy)
-    
-func set_hero(position):
+
+func spawn_hero(position):
     hero.map_position = position
     hero.position = map_to_world(position)
 
@@ -58,7 +58,7 @@ func move_hero(position):
             break
     if not is_valid:
         return
-    
+
     hero.map_position = position
     hero.position = map_to_world(position)
 
@@ -91,13 +91,13 @@ func mouse_up():
 func mouse_down():
     if hovered_position == null:
         return
-        
+
 func _process(delta):
     if hero.active_state == hero.STATE_NONE:
         hero.clear_valid_moves()
     if hero.active_state == hero.STATE_MOVE:
         draw_valid_moves(world_to_map(hero.position), 1)
-        
+
 func _input(event):
     if event is InputEventMouseButton:
         if event.pressed:

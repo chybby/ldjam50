@@ -13,9 +13,12 @@ func draw_valid_moves(valid_moves):
     var tile_set = $ValidMoves
     for v in valid_moves:
         tile_set.set_cell(v.x, v.y, 0)
-        
+
 func clear_valid_moves():
     $ValidMoves.clear()
+
+func is_alive():
+    return true
 
 func _input(event):
     if Input.is_action_pressed("choose_shield"):

@@ -7,12 +7,14 @@ var enemy_scene = preload('res://Enemy.tscn')
 onready var game_map = $GameMap
 
 func _ready():
-    game_map.set_hero(Vector2(7, 7))
+    game_map.spawn_hero(Vector2(7, 7))
 
     spawn_enemies()
     enemies_telegraph_actions()
 
     # Hero's turn
+
+    enemies_do_actions()
 
 func spawn_enemies():
     var enemy = enemy_scene.instance()
@@ -29,5 +31,6 @@ func enemies_telegraph_actions():
     for enemy in game_map.enemies.values():
         enemy.telegraph_action()
 
-func do_enemy_turn():
-    pass
+func enemies_do_actions():
+    for enemy in game_map.enemies.values():
+        enemy.do_action()
