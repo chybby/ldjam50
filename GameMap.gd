@@ -13,24 +13,19 @@ var input_enabled = false
 func _ready():
     clear()
 
-func get_valid_moves(position, max_distance):
+func get_valid_moves(current_position, max_distance):
     var valid_moves = []
     var valid_moves_rel = []
     for x in range(-max_distance, max_distance+1):
         for y in range(-max_distance, max_distance+1):
             if x == 0 and y == 0:
                 continue
-            var newx = position.x+x
-            var newy = position.y+y
-            if newx < 0 or newy < 0 or newx >= width or newy >= height:
-                continue
+            var newx = current_position.x+x
+            var newy = current_position.y+y
             var new_position = Vector2(newx, newy)
-            if enemies.has(new_position):
-                continue
-            if hero.map_position == new_position:
-                continue
-            valid_moves.append(new_position)
-            valid_moves_rel.append(Vector2(x, y))
+            if is_empty_space(new_position):
+                valid_moves.append(new_position)
+                valid_moves_rel.append(Vector2(x, y))
     return [valid_moves, valid_moves_rel]
 
 func get_empty_cells():
@@ -71,20 +66,22 @@ func spawn_hero(position):
     hero.map_position = position
     hero.position = map_to_world(position)
 
-# returns whether or not the hero was moved
-# the given position may be invalid
-func move_hero(position):
-    var valid_moves = get_valid_moves(hero.map_position, 1)[0]
-    var is_valid = false
-    for v in valid_moves:
-        if position == v:
-            is_valid = true
-            break
-    if not is_valid:
+func is_empty_space(position):
+    if position.x < 0 or position.y < 0 or position.x >= width or position.y >= height:
         return false
+    if enemies.has(position):
+        return false
+    if hero.map_position == position:
+        return false
+    return true
 
-    hero.map_position = position
-    hero.position = map_to_world(position)
+func is_valid_move(current_position, new_position, max_distance):
+    var valid_moves = get_valid_moves(current_position, max_distance)[0]
+    return new_position in valid_moves
+
+func move_hero(new_position):
+    hero.map_position = new_position
+    hero.position = map_to_world(new_position)
     return true
 
 func place_enemy(enemy, position):
@@ -99,12 +96,12 @@ func clear_enemies():
         remove_child(enemy)
     enemies = {}
 
-func move_enemy(enemy, position):
+func move_enemy(enemy, new_position):
     enemies.erase(enemy.map_position)
-    enemies[position] = enemy
+    enemies[new_position] = enemy
 
-    enemy.map_position = position
-    enemy.position = map_to_world(position)
+    enemy.map_position = new_position
+    enemy.position = map_to_world(new_position)
 
 func mouse_down(mouse_position):
     emit_signal('cell_clicked', world_to_map(mouse_position))
@@ -113,8 +110,6 @@ func _input(event):
     if not input_enabled:
         return
 
-    if event is InputEventMouseButton:
+    if event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
         if not event.pressed:
             mouse_down(event.position)
-
-

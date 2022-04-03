@@ -3,6 +3,7 @@ extends Node2D
 var turn = 0
 
 var laser_enemy_scene = preload('res://LaserEnemy.tscn')
+var bomb_enemy_scene = preload('res://BombEnemy.tscn')
 
 onready var game_map = $GameMap
 onready var map_ui = $MapUI
@@ -76,7 +77,7 @@ func spawn_enemies():
     print('Turn number %s, desired enemies %s, current enemies %s' % [turn, desired_enemies, num_enemies])
     print('Enemies to spawn: ', max(desired_enemies - num_enemies, 0))
     for i in max(desired_enemies - num_enemies, 0):
-        var enemy = laser_enemy_scene.instance()
+        var enemy = bomb_enemy_scene.instance()
         var empty_cells = game_map.get_empty_cells()
         game_map.place_enemy(enemy, empty_cells.keys()[randi() % len(empty_cells)])
 
