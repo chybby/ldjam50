@@ -14,7 +14,8 @@ var shield_angle = 0
 var shield_angle_select = 0
 
 # TODO: multiple resources or just one?
-export var energy = 100
+export var starting_energy = 100
+var energy = starting_energy
 
 func draw_valid_moves(valid_moves):
     var tile_set = $ValidMoves

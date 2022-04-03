@@ -1,18 +1,21 @@
 extends TextureProgress
 
+var bar_low = preload("res://energy_inner_low.png")
+var bar_med = preload("res://energy_inner_med.png")
+var bar_high = preload("res://energy_inner_high.png")
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
-
+var low_pct = 0.4
+var med_pct = 0.7
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-    pass # Replace with function body.
+    texture_progress = bar_high
 
-func _process(delta):
+func _on_TextureProgress_value_changed(value):
     $Label.text = str(value)
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#    pass
+    texture_progress = bar_high
+    if value < max_value * med_pct and \
+        value >= max_value * low_pct:
+        texture_progress = bar_med
+    elif value < max_value * low_pct:
+        texture_progress = bar_low
