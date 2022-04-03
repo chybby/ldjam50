@@ -28,12 +28,17 @@ func setup_game():
     game_map.hero.connect('move_finished', self, '_on_Player_move_finished')
 
     spawn_enemies()
-    enemies_telegraph_actions()
 
-    game_map.input_enabled = true    
+    var result = enemies_telegraph_actions()
+    if result is GDScriptFunctionState:
+        yield(result, 'completed')
+
+    print('Input enabled')
+    game_map.input_enabled = true
 
 func _on_Player_move_finished():
     energy_resource.value = game_map.hero.energy
+    print('Input disabled')
     game_map.input_enabled = false
     # check if it's game over
     if energy_resource.value <= 0:
@@ -42,10 +47,17 @@ func _on_Player_move_finished():
         game_over_ui.visible = true
         return
         
-    enemies_do_actions()
+    var result = enemies_do_actions()
+    if result is GDScriptFunctionState:
+        yield(result, 'completed')
     turn += 1
     spawn_enemies()
-    enemies_telegraph_actions()
+
+    result = enemies_telegraph_actions()
+    if result is GDScriptFunctionState:
+        yield(result, 'completed')
+
+    print('Input enabled')
     game_map.input_enabled = true
 
 func spawn_enemies():
@@ -59,11 +71,23 @@ func spawn_enemies():
         var num_enemies = len(game_map.enemies)
         var desired_enemies = (turn+10)/10
         print('Turn number %s, desired enemies %s, current enemies %s' % [turn, desired_enemies, num_enemies])
+        print('Enemies to spawn: ', max(desired_enemies - num_enemies, 0))
+        for i in max(desired_enemies - num_enemies, 0):
+            print('Spawning new enemy')
+            var enemy = enemy_scene.instance()
+            # TODO: place enemies in random spots
+            game_map.place_enemy(enemy, Vector2(7, 2))
 
 func enemies_telegraph_actions():
     for enemy in game_map.enemies.values():
-        enemy.telegraph_action()
+        print('Enemy telegraphs actions')
+        var result = enemy.telegraph_action()
+        if result is GDScriptFunctionState:
+            yield(result, 'completed')
 
 func enemies_do_actions():
     for enemy in game_map.enemies.values():
-        enemy.do_action()
+        print('Enemy does actions')
+        var result = enemy.do_action()
+        if result is GDScriptFunctionState:
+            yield(result, 'completed')

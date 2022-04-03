@@ -14,7 +14,6 @@ func _ready():
     clear()
 
 func get_valid_moves(position, max_distance):
-    # TODO: any need for < 0, > screen width check?
     var valid_moves = []
     var valid_moves_rel = []
     for x in range(-max_distance, max_distance+1):

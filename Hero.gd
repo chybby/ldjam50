@@ -29,6 +29,9 @@ func is_alive():
     return true
 
 func _input(event):
+    if not game_map.input_enabled:
+        return
+
     if Input.is_action_pressed("choose_shield"):
         active_state = STATE_SHIELD
         $ValidMoves.clear()
