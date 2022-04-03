@@ -20,6 +20,8 @@ func setup_game():
     map_ui.visible = true
     game_map.spawn_hero(Vector2(7, 7))
     game_map.hero.get_node('Sprite').rotation = 0
+    game_map.hero.shield_angle = -PI/2
+    game_map.hero.get_node('Shield').visible = true
 
     energy_resource.min_value = 0
     energy_resource.max_value = game_map.hero.starting_energy
@@ -30,7 +32,9 @@ func setup_game():
     game_map.hero.connect('hero_died', self, '_on_Hero_died')
     game_map.hero.connect('energy_changed', self, '_on_Hero_energy_changed')
 
-    spawn_enemies()
+    # Special enemy setup for turn 1
+    var enemy = enemy_scene.instance()
+    game_map.place_enemy(enemy, Vector2(7, 2))
 
     var result = enemies_telegraph_actions()
     if result is GDScriptFunctionState:
@@ -51,6 +55,10 @@ func _on_Hero_move_finished():
     if result is GDScriptFunctionState:
         yield(result, 'completed')
 
+    if not game_map.hero.is_alive():
+        yield(get_tree(), 'idle_frame')
+        _on_Hero_move_finished()
+
     game_map.input_enabled = true
 
 func _on_Hero_died():
@@ -63,25 +71,18 @@ func _on_Hero_energy_changed(energy):
     energy_resource.value = energy
 
 func spawn_enemies():
-    if turn == 0:
+    var num_enemies = len(game_map.enemies)
+    var desired_enemies = (turn+10)/10
+    print('Turn number %s, desired enemies %s, current enemies %s' % [turn, desired_enemies, num_enemies])
+    print('Enemies to spawn: ', max(desired_enemies - num_enemies, 0))
+    for i in max(desired_enemies - num_enemies, 0):
         var enemy = enemy_scene.instance()
+        # TODO: place enemies in random spots
         game_map.place_enemy(enemy, Vector2(7, 2))
-
-        enemy = enemy_scene.instance()
-        game_map.place_enemy(enemy, Vector2(9, 5))
-    else:
-        var num_enemies = len(game_map.enemies)
-        var desired_enemies = (turn+10)/10
-        print('Turn number %s, desired enemies %s, current enemies %s' % [turn, desired_enemies, num_enemies])
-        print('Enemies to spawn: ', max(desired_enemies - num_enemies, 0))
-        for i in max(desired_enemies - num_enemies, 0):
-            var enemy = enemy_scene.instance()
-            # TODO: place enemies in random spots
-            game_map.place_enemy(enemy, Vector2(7, 2))
 
 func enemies_telegraph_actions():
     for enemy in game_map.enemies.values():
-        var result = enemy.telegraph_action()
+        var result = enemy.telegraph_action(turn)
         if result is GDScriptFunctionState:
             yield(result, 'completed')
 
