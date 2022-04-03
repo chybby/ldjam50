@@ -28,10 +28,25 @@ func get_valid_moves(position, max_distance):
             valid_moves_rel.append(Vector2(x, y))
     return [valid_moves, valid_moves_rel]
     
-func get_valid_line_attacks(position):
+func get_valid_line_attacks(position, rotation):
     var valid_moves_rel = []
-    for y in range(1,position.y+1):
-            valid_moves_rel.append(Vector2(0, -y))
+    var xs
+    var ys
+#    if rotation < -3*PI/4:
+#        rotation = PI
+#    elif rotation < -PI/4:
+#
+#    elif rotation < PI/4:
+#        xs = range(1, 2)
+#        ys = range(1, position.y+1)
+#    elif rotation < 3*PI/4:
+#        rotation = PI/2
+#    else:
+#        rotation = PI
+        
+#    for x in xs:
+#        for y in ys:
+#            valid_moves_rel.append(Vector2(x, y))
     return valid_moves_rel
 
 #func get_grid():

@@ -54,7 +54,7 @@ func _input(event):
     elif Input.is_action_pressed("choose_weapon"):
         active_state = STATE_WEAPON
         $ValidThingos.clear()
-        var vas = game_map.get_valid_line_attacks(map_position)
+        var vas = game_map.get_valid_line_attacks(map_position, $Sprite.rotation)
         draw_valid_attacks(vas)
         
 
@@ -107,15 +107,17 @@ func _on_GameMap_cell_clicked(position):
     var action_done = false
     if active_state == STATE_MOVE:
         if previous_state == STATE_WEAPON:
-            $LaserBeam.play('Fire', true)
-            yield($LaserBeam, 'animation_finished')
-            $LaserBeam.visible = false
+            $Sprite/LaserBeam.play('Fire', true)
+            yield($Sprite/LaserBeam, 'animation_finished')
+            $Sprite/LaserBeam.visible = false
+            $Sprite/LaserBeam.get_node('Area2D/CollisionShape2D').disabled = true
         var look_vector = game_map.map_to_world(position) - self.position
         var is_valid = game_map.move_hero(position)
         if not is_valid:
             return
         $Sprite.look_at(self.position + look_vector + Vector2(32, 32))
         $Sprite.rotation += PI/2
+        
         energy -= 10
         emit_signal('energy_changed', energy)
         action_done = true
@@ -129,12 +131,12 @@ func _on_GameMap_cell_clicked(position):
         previous_state = STATE_SHIELD
     elif active_state == STATE_WEAPON:
         active_state = STATE_NONE
-        $LaserBeam.visible = true
-        $LaserBeam.stop()
-        $LaserBeam.play('Fire')
-        yield($LaserBeam, 'animation_finished')
-        print("about to persist")
-        $LaserBeam.play('Persist')
+        $Sprite/LaserBeam.visible = true
+        $Sprite/LaserBeam.get_node('Area2D/CollisionShape2D').disabled = false
+        $Sprite/LaserBeam.stop()
+        $Sprite/LaserBeam.play('Fire')
+        yield($Sprite/LaserBeam, 'animation_finished')
+        $Sprite/LaserBeam.play('Persist')
         previous_state = STATE_WEAPON
         action_done = true
 
