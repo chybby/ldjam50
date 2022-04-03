@@ -61,7 +61,7 @@ func get_valid_line_attacks(position, rotation):
 #        rotation = PI/2
 #    else:
 #        rotation = PI
-        
+
 #    for x in xs:
 #        for y in ys:
 #            valid_moves_rel.append(Vector2(x, y))
