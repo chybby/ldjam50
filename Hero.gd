@@ -52,7 +52,8 @@ func _process(delta):
         var shield = $Shield
         shield.visible = true
         shield.rotation = shield_angle
-
+    if active_state == STATE_MOVE:
+        $Shield.visible = false
 #	if active_state == STATE_WEAPON:
 #		# display weapons primed?
 #		# cursor with attack icon?
