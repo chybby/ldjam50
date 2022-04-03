@@ -27,6 +27,12 @@ func get_valid_moves(position, max_distance):
             valid_moves.append(Vector2(newx, newy))
             valid_moves_rel.append(Vector2(x, y))
     return [valid_moves, valid_moves_rel]
+    
+func get_valid_line_attacks(position):
+    var valid_moves_rel = []
+    for y in range(1,position.y+1):
+            valid_moves_rel.append(Vector2(0, -y))
+    return valid_moves_rel
 
 #func get_grid():
 #    var grid = []
