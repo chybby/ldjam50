@@ -2,24 +2,35 @@ extends Sprite
 
 var map_position: Vector2
 
-enum actions {MOVE, ATTACK}
+enum actions {MOVE, ATTACK, NOTHING}
+
+onready var game_map = get_parent()
 
 var planned_action
 
-var planned_move_position
+func _ready():
+    game_map.hero.connect('move_finished', self, '_on_Player_move_finished')
 
-var game_map
 
-func next_action():
-    # choose a random spot to move to
-    var vms = game_map.get_valid_moves(map_position, 1)[0]
-    var next_pos = vms[randi() % vms.size()]
-    map_position = next_pos
+func _on_Player_move_finished():
+    if $LaserBeam.animation == 'Persist':
+        $LaserBeam.visible = false
 
 func telegraph_action():
-    planned_action = actions.ATTACK
+    if planned_action == actions.ATTACK:
+        if randi() % 2 == 0:
+            planned_action = actions.MOVE
+        else:
+            planned_action = actions.NOTHING
+    else:
+        if randi() % 2 == 0:
+            planned_action = actions.MOVE
+        else:
+            planned_action = actions.ATTACK
+            $LaserBeam.visible = true
+            $LaserBeam.play('Intro')
 
-    var tile_map = $Attacks
+#    var tile_map = $Attacks
 
 #    var p = map_position
 #    p.x = 0
@@ -39,10 +50,14 @@ func telegraph_action():
 
 func do_action():
     if planned_action == actions.MOVE:
-        pass
+        var vms = game_map.get_valid_moves(map_position, 1)[0]
+        var next_pos = vms[randi() % vms.size()]
+        game_map.move_enemy(self, next_pos)
     elif planned_action == actions.ATTACK:
-        $LaserBeam.play('Intro')
-
+        $LaserBeam.play('Fire')
 
 func _on_LaserBeam_animation_finished():
-    $LaserBeam.play('Persist')
+    if $LaserBeam.animation == 'Fire':
+        $LaserBeam.play('Persist')
+    elif $LaserBeam.animation == 'Intro':
+        $LaserBeam.play('Telegraph')

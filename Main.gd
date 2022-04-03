@@ -14,26 +14,37 @@ var bar_high = preload("res://energy_inner_high.png")
 
 func _ready():
     game_map.spawn_hero(Vector2(7, 7))
+
+    game_map.hero.connect('move_finished', self, '_on_Player_move_finished')
+
     energy_resource.min_value = 0
     energy_resource.max_value = game_map.hero.energy
     energy_resource.texture_progress = bar_high
+
     spawn_enemies()
-#    enemies_telegraph_actions()
+    enemies_telegraph_actions()
 
-    # Hero's turn
+    game_map.input_enabled = true
 
+func _on_Player_move_finished():
+    game_map.input_enabled = false
     enemies_do_actions()
+    turn += 1
+    spawn_enemies()
+    enemies_telegraph_actions()
+    game_map.input_enabled = true
 
 func spawn_enemies():
-    var enemy = enemy_scene.instance()
-    enemy.game_map = game_map
-    add_child(enemy)
-    game_map.place_enemy(enemy, Vector2(7, 2))
+    if turn == 0:
+        var enemy = enemy_scene.instance()
+        game_map.place_enemy(enemy, Vector2(7, 2))
 
-    enemy = enemy_scene.instance()
-    enemy.game_map = game_map
-    add_child(enemy)
-    game_map.place_enemy(enemy, Vector2(9, 5))
+        enemy = enemy_scene.instance()
+        game_map.place_enemy(enemy, Vector2(9, 5))
+    else:
+        var num_enemies = len(game_map.enemies)
+        var desired_enemies = (turn+10)/10
+        print('Turn number %s, desired enemies %s, current enemies %s' % [turn, desired_enemies, num_enemies])
 
 func enemies_telegraph_actions():
     for enemy in game_map.enemies.values():

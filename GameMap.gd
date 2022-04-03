@@ -1,12 +1,14 @@
 extends TileMap
 
+signal cell_clicked(position)
+
 var width = get_used_rect().size.x
 var height = get_used_rect().size.y
 
-var hovered_position = null
-
 onready var hero = $Hero
 var enemies = {}
+
+var input_enabled = false
 
 func _ready():
     clear()
@@ -58,65 +60,27 @@ func move_hero(position):
     hero.position = map_to_world(position)
 
 func place_enemy(enemy, position):
+    add_child(enemy)
     enemies[position] = enemy
     enemy.map_position = position
 
     enemy.position = map_to_world(position)
 
-func mouse_changed_cell(old_position, new_position):
-    if old_position != null:
-        set_cell(old_position.x, old_position.y, -1)
+func move_enemy(enemy, position):
+    enemies.erase(enemy.map_position)
+    enemies[position] = enemy
 
-    if new_position != null:
-        set_cell(new_position.x, new_position.y, 0)
+    enemy.map_position = position
+    enemy.position = map_to_world(position)
 
-func mouse_hover(position):
-    if position == hovered_position:
-        return
+func mouse_down(mouse_position):
+    print('GameMap registered click at map position ', world_to_map(mouse_position))
+    emit_signal('cell_clicked', world_to_map(mouse_position))
 
-    var old_hovered_position = hovered_position
-    hovered_position = position
-
-    mouse_changed_cell(old_hovered_position, hovered_position)
-
-func mouse_up():
-    if hovered_position == null:
-        return
-
-func mouse_down():
-    if hovered_position == null:
-        return
-
-func _process(delta):
-    if hero.active_state == hero.STATE_MOVE:
-        var vms = get_valid_moves(hero.map_position, 1)[1]
-        for v in vms:
-            hero.draw_valid_moves(vms)
-        
 func _input(event):
-    if event is InputEventMouseButton:
-        if event.pressed:
-            var action_done = false
-            if hero.active_state == hero.STATE_MOVE:
-                move_hero(world_to_map(event.position))
-                hero.energy -= 10
-                action_done = true
-                hero.active_state = hero.STATE_NONE
-            elif hero.active_state == hero.STATE_SHIELD:
-                hero.energy -= 5
-                action_done = true
-                hero.shield_angle = hero.shield_angle_select
-                hero.active_state = hero.STATE_NONE
-            if action_done:
-                # an action was made by the hero so we need to:
-                # - check if we hit anything?
-                # - do the enemy turn (move them, make them shoot etc.)
-                for enemy in enemies.values():
-                    enemy.next_action()
-                    enemy.position = map_to_world(enemy.map_position)
-#    elif event is InputEventMouseMotion:
-#        mouse_hover(game_map.world_to_map(event.position))
+    if not input_enabled:
+        return
 
-func _notification(event):
-    if event == NOTIFICATION_WM_MOUSE_EXIT:
-        mouse_hover(null)
+    if event is InputEventMouseButton:
+        if not event.pressed:
+            mouse_down(event.position)
