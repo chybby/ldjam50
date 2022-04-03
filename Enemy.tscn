@@ -100,17 +100,61 @@ texture = ExtResource( 1 )
 centered = false
 script = ExtResource( 2 )
 
-[node name="LaserBeam" type="AnimatedSprite" parent="."]
+[node name="LaserBeamRight" type="AnimatedSprite" parent="."]
 visible = false
 position = Vector2( 64, 0 )
 frames = SubResource( 27 )
 animation = "Fire"
 centered = false
 
-[node name="Area2D" type="Area2D" parent="LaserBeam"]
+[node name="Area2D" type="Area2D" parent="LaserBeamRight"]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="LaserBeam/Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LaserBeamRight/Area2D"]
 position = Vector2( 448, 32 )
 shape = SubResource( 28 )
 
-[connection signal="animation_finished" from="LaserBeam" to="." method="_on_LaserBeam_animation_finished"]
+[node name="LaserBeamUp" type="AnimatedSprite" parent="."]
+visible = false
+rotation = -1.5708
+frames = SubResource( 27 )
+animation = "Fire"
+centered = false
+
+[node name="Area2D" type="Area2D" parent="LaserBeamUp"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LaserBeamUp/Area2D"]
+position = Vector2( 448, 32 )
+shape = SubResource( 28 )
+
+[node name="LaserBeamLeft" type="AnimatedSprite" parent="."]
+visible = false
+position = Vector2( 0, 64 )
+rotation = 3.14159
+frames = SubResource( 27 )
+animation = "Fire"
+centered = false
+
+[node name="Area2D" type="Area2D" parent="LaserBeamLeft"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LaserBeamLeft/Area2D"]
+position = Vector2( 448, 32 )
+shape = SubResource( 28 )
+
+[node name="LaserBeamDown" type="AnimatedSprite" parent="."]
+visible = false
+position = Vector2( 64, 64 )
+rotation = 1.5708
+frames = SubResource( 27 )
+animation = "Fire"
+centered = false
+
+[node name="Area2D" type="Area2D" parent="LaserBeamDown"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LaserBeamDown/Area2D"]
+position = Vector2( 448, 32 )
+shape = SubResource( 28 )
+
+[connection signal="animation_finished" from="LaserBeamRight" to="." method="_on_LaserBeam_animation_finished"]
+[connection signal="animation_finished" from="LaserBeamUp" to="." method="_on_LaserBeam_animation_finished"]
+[connection signal="animation_finished" from="LaserBeamLeft" to="." method="_on_LaserBeam_animation_finished"]
+[connection signal="animation_finished" from="LaserBeamDown" to="." method="_on_LaserBeam_animation_finished"]
