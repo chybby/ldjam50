@@ -14,7 +14,7 @@ func select():
     c = selected_c
     width = selected_width
     self.update()
-    
+
 func unselect():
     c = unselected_c
     width = unselected_width
@@ -23,8 +23,6 @@ func unselect():
 # Called when the node enters the scene tree for the first time.
 func _ready():
     pass # Replace with function body.
-
-
 
 func _draw():
     draw_arc(zero_vector, radius, -PI/2, PI/2, pts, c, width, true)

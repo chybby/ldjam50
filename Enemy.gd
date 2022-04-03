@@ -17,7 +17,14 @@ func _ready():
     all_lasers.append($LaserBeamRight)
     all_lasers.append($LaserBeamDown)
 
-func telegraph_action():
+func telegraph_action(turn):
+    if turn == 0:
+        planned_action = actions.ATTACK
+        var laser = $LaserBeamDown
+        active_lasers.append(laser)
+        yield(play_laser_telegraph(laser), 'completed')
+        return
+
     if previous_action == actions.ATTACK:
         if randi() % 2 == 0:
             planned_action = actions.MOVE

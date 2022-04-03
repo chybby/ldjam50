@@ -24,10 +24,28 @@ func get_valid_moves(position, max_distance):
             var newy = position.y+y
             if newx < 0 or newy < 0 or newx >= width or newy >= height:
                 continue
-            valid_moves.append(Vector2(newx, newy))
+            var new_position = Vector2(newx, newy)
+            if enemies.has(new_position):
+                continue
+            if hero.map_position == new_position:
+                continue
+            valid_moves.append(new_position)
             valid_moves_rel.append(Vector2(x, y))
     return [valid_moves, valid_moves_rel]
-    
+
+func get_empty_cells():
+    var cells = {}
+    for x in width:
+        for y in height:
+            cells[Vector2(x, y)] = 1
+
+    for enemy_position in enemies.keys():
+        cells.erase(enemy_position)
+
+    cells.erase(hero.map_position)
+
+    return cells
+
 func get_valid_line_attacks(position, rotation):
     var valid_moves_rel = []
     var xs
@@ -48,19 +66,6 @@ func get_valid_line_attacks(position, rotation):
 #        for y in ys:
 #            valid_moves_rel.append(Vector2(x, y))
     return valid_moves_rel
-
-#func get_grid():
-#    var grid = []
-#    for x in width:
-#        var row = []
-#        for y in height:
-#            row.append([])
-#        grid.append(row)
-#
-#    grid[hero.map_position.x][hero.map_position.y].append(hero)
-#
-#    for enemy in enemies:
-#        grid[enemy.map_position.x][enemy.map_position.y].append(enemy)
 
 func spawn_hero(position):
     hero.map_position = position

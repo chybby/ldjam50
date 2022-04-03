@@ -24,10 +24,10 @@ var energy = starting_energy
 
 func draw_valid_moves(valid_moves):
     _draw_valids(valid_moves, 0)
-        
+
 func draw_valid_attacks(valid_attacks):
     _draw_valids(valid_attacks, 1)
-    
+
 func _draw_valids(valids, i):
     var tile_set = $ValidThingos
     for v in valids:
@@ -37,7 +37,7 @@ func clear_valid_thingos():
     $ValidThingos.clear()
 
 func is_alive():
-    return true
+    return energy > 0
 
 func _input(event):
     if not game_map.input_enabled:
@@ -56,7 +56,7 @@ func _input(event):
         $ValidThingos.clear()
         var vas = game_map.get_valid_line_attacks(map_position, $Sprite.rotation)
         draw_valid_attacks(vas)
-        
+
 
     if event is InputEventMouseMotion and active_state == STATE_SHIELD:
         shield_angle_select = get_shield_angle(event.position)
@@ -79,6 +79,15 @@ func is_shield_pointing_at_enemy(enemy):
     var shield_vector = Vector2.RIGHT.rotated(shield_angle)
     var hero_to_enemy = enemy.position - position
     return int(hero_to_enemy.angle_to(shield_vector)) == 0
+
+func use_energy(energy_used):
+    energy -= energy_used
+    emit_signal('energy_changed', energy)
+    if energy < 0:
+        position = Vector2(-200, -200)
+        emit_signal('hero_died')
+    if energy == 0:
+        $Shield.visible = false
 
 func _process(delta):
     # 3 options for displaying currently selected thingo:
@@ -117,9 +126,8 @@ func _on_GameMap_cell_clicked(position):
             return
         $Sprite.look_at(self.position + look_vector + Vector2(32, 32))
         $Sprite.rotation += PI/2
-        
-        energy -= 10
-        emit_signal('energy_changed', energy)
+        use_energy(10)
+
         action_done = true
         active_state = STATE_NONE
         previous_state = STATE_MOVE
@@ -140,19 +148,17 @@ func _on_GameMap_cell_clicked(position):
         previous_state = STATE_WEAPON
         action_done = true
 
-    if energy <= 0:
-        emit_signal('hero_died')
-
     if action_done:
         emit_signal('move_finished')
+        for area in $Area2D.get_overlapping_areas():
+            _on_Area2D_area_entered(area)
 
 func _on_Area2D_area_entered(area):
     #TODO: figure out if this is a weapon or battery. Assume weapon for now.
     print('Player entered weapon area of enemy: ', area.get_parent().get_parent())
     var enemy = area.get_parent().get_parent()
     if is_shield_pointing_at_enemy(enemy):
-        energy -= 20
-        emit_signal('energy_changed', energy)
+        use_energy(20)
     else:
         position = Vector2(-200, -200)
         emit_signal('hero_died')
