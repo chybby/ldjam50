@@ -99,9 +99,11 @@ func _input(event):
             var action_done = false
             if hero.active_state == hero.STATE_MOVE:
                 move_hero(world_to_map(event.position))
+                hero.energy -= 10
                 action_done = true
                 hero.active_state = hero.STATE_NONE
             elif hero.active_state == hero.STATE_SHIELD:
+                hero.energy -= 5
                 action_done = true
                 hero.shield_angle = hero.shield_angle_select
                 hero.active_state = hero.STATE_NONE

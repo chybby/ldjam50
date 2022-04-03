@@ -10,6 +10,9 @@ var max_move_distance = 1
 var shield_angle = 0
 var shield_angle_select = 0
 
+# TODO: multiple resources or just one?
+export var energy = 100
+
 func draw_valid_moves(valid_moves):
     var tile_set = $ValidMoves
     for v in valid_moves:
