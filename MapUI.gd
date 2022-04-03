@@ -1,4 +1,4 @@
 extends GridContainer
 
-func _ready():
-    resiz
+#func _ready():
+#    resiz

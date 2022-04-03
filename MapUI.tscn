@@ -61,3 +61,5 @@ margin_bottom = 38.0
 custom_fonts/font = SubResource( 1 )
 text = "100"
 align = 1
+
+[connection signal="value_changed" from="TextureProgress" to="TextureProgress" method="_on_TextureProgress_value_changed"]

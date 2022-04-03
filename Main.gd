@@ -7,19 +7,25 @@ var enemy_scene = preload('res://Enemy.tscn')
 onready var game_map = $GameMap
 onready var map_ui = $MapUI
 onready var energy_resource = $MapUI/TextureProgress
-
-var bar_low = preload("res://energy_inner_low.png")
-var bar_med = preload("res://energy_inner_med.png")
-var bar_high = preload("res://energy_inner_high.png")
+onready var game_over_ui = $GameOver
+onready var game_over_ui_turn_text = $GameOver/TurnText
 
 func _ready():
+    setup_game()
+    
+func setup_game():
+    game_map.clear_enemies()
+    turn = 0
+    game_over_ui.visible = false
+    map_ui.visible = true
     game_map.spawn_hero(Vector2(7, 7))
+    
+    energy_resource.min_value = 0
+    energy_resource.max_value = game_map.hero.starting_energy
+    game_map.hero.energy = game_map.hero.starting_energy
+    energy_resource.value = game_map.hero.starting_energy
 
     game_map.hero.connect('move_finished', self, '_on_Player_move_finished')
-
-    energy_resource.min_value = 0
-    energy_resource.max_value = game_map.hero.energy
-    energy_resource.texture_progress = bar_high
 
     spawn_enemies()
 
@@ -31,13 +37,19 @@ func _ready():
     game_map.input_enabled = true
 
 func _on_Player_move_finished():
+    energy_resource.value = game_map.hero.energy
     print('Input disabled')
     game_map.input_enabled = false
-
+    # check if it's game over
+    if energy_resource.value <= 0:
+        map_ui.visible = false
+        game_over_ui_turn_text.text = "You lasted " + str(turn) + " turns"
+        game_over_ui.visible = true
+        return
+        
     var result = enemies_do_actions()
     if result is GDScriptFunctionState:
         yield(result, 'completed')
-
     turn += 1
     spawn_enemies()
 
@@ -79,15 +91,3 @@ func enemies_do_actions():
         var result = enemy.do_action()
         if result is GDScriptFunctionState:
             yield(result, 'completed')
-
-var low_pct = 0.4
-var med_pct = 0.7
-
-func _process(delta):
-    energy_resource.value = game_map.hero.energy
-    energy_resource.texture_progress = bar_high
-    if energy_resource.value < energy_resource.max_value * med_pct and \
-        energy_resource.value >= energy_resource.max_value * low_pct:
-        energy_resource.texture_progress = bar_med
-    elif energy_resource.value < energy_resource.max_value * low_pct:
-        energy_resource.texture_progress = bar_low
