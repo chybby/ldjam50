@@ -81,7 +81,9 @@ func _process(delta):
 func _on_GameMap_cell_clicked(position):
     var action_done = false
     if active_state == STATE_MOVE:
-        game_map.move_hero(position)
+        var is_valid = game_map.move_hero(position)
+        if not is_valid:
+            return
         energy -= 10
         action_done = true
         active_state = STATE_NONE

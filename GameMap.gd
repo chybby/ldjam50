@@ -46,6 +46,8 @@ func spawn_hero(position):
     hero.map_position = position
     hero.position = map_to_world(position)
 
+# returns whether or not the hero was moved
+# the given position may be invalid
 func move_hero(position):
     var valid_moves = get_valid_moves(hero.map_position, 1)[0]
     var is_valid = false
@@ -54,10 +56,11 @@ func move_hero(position):
             is_valid = true
             break
     if not is_valid:
-        return
+        return false
 
     hero.map_position = position
     hero.position = map_to_world(position)
+    return true
 
 func place_enemy(enemy, position):
     add_child(enemy)
