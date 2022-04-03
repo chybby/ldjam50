@@ -126,19 +126,22 @@ func get_valid_line_attacks(position, rotation):
     print(valid_moves_rel)
     return valid_moves_rel
 
-func _on_GameMap_cell_clicked(position):
+func _on_GameMap_cell_clicked(clicked_map_position):
     var action_done = false
     if active_state == STATE_MOVE:
+        if not game_map.is_valid_move(map_position, clicked_map_position, 1):
+            return
+
         if previous_state == STATE_WEAPON:
             $Sprite/LaserBeam.play('Fire', true)
             yield($Sprite/LaserBeam, 'animation_finished')
             $Sprite/LaserBeam.visible = false
             $Sprite/LaserBeam.get_node('Area2D/CollisionShape2D').disabled = true
-        var look_vector = game_map.map_to_world(position) - self.position
-        var is_valid = game_map.move_hero(position)
-        if not is_valid:
-            return
-        $Sprite.look_at(self.position + look_vector + Vector2(32, 32))
+
+        var look_vector = game_map.map_to_world(clicked_map_position) - position
+        game_map.move_hero(clicked_map_position)
+
+        $Sprite.look_at(position + look_vector + Vector2(32, 32))
         $Sprite.rotation += PI/2
         use_energy(10)
 
