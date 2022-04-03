@@ -23,9 +23,7 @@ func _input(event):
     elif Input.is_action_pressed("choose_move"):
         active_state = STATE_MOVE
 
-    if event is InputEventMouseButton:
-        pass
-    elif event is InputEventMouseMotion:
+    if event is InputEventMouseMotion and active_state == STATE_SHIELD:
         shield_angle = $ShieldPosition.get_angle_to(event.position)
         if shield_angle < -3*PI/4:
             shield_angle = PI
@@ -43,17 +41,13 @@ func _process(delta):
     # - shield
     # - weapon
     # - move
-    if active_state == STATE_NONE:
-        $Shield.visible = false
-        return
     if active_state == STATE_SHIELD:
 #		# get mouse position
 #		# display shield dome relatively
-        var shield = $Shield
-        shield.visible = true
-        shield.rotation = shield_angle
-    if active_state == STATE_MOVE:
-        $Shield.visible = false
+        $Shield.rotation = shield_angle
+        $Shield.select()
+    else:
+        $Shield.unselect()
 #	if active_state == STATE_WEAPON:
 #		# display weapons primed?
 #		# cursor with attack icon?

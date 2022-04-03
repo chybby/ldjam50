@@ -11,11 +11,6 @@ var enemies = {}
 func _ready():
     clear()
 
-func draw_valid_moves(position, max_distance):
-    var vms = get_valid_moves(position, max_distance)[1]
-    for v in vms:
-        hero.draw_valid_moves(vms)
-
 func get_valid_moves(position, max_distance):
     # TODO: any need for < 0, > screen width check?
     var valid_moves = []
@@ -96,14 +91,28 @@ func _process(delta):
     if hero.active_state == hero.STATE_NONE:
         hero.clear_valid_moves()
     if hero.active_state == hero.STATE_MOVE:
-        draw_valid_moves(world_to_map(hero.position), 1)
+        var vms = get_valid_moves(hero.map_position, 1)[1]
+        for v in vms:
+            hero.draw_valid_moves(vms)
         
 func _input(event):
     if event is InputEventMouseButton:
         if event.pressed:
+            var action_done = false
             if hero.active_state == hero.STATE_MOVE:
                 move_hero(world_to_map(event.position))
+                action_done = true
                 hero.active_state = hero.STATE_NONE
+            elif hero.active_state == hero.STATE_SHIELD:
+                action_done = true
+                hero.active_state = hero.STATE_NONE
+            if action_done:
+                # an action was made by the hero so we need to:
+                # - check if we hit anything?
+                # - do the enemy turn (move them, make them shoot etc.)
+                for enemy in enemies.values():
+                    enemy.next_action()
+                    enemy.position = map_to_world(enemy.map_position)
 #    elif event is InputEventMouseMotion:
 #        mouse_hover(game_map.world_to_map(event.position))
 

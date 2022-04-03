@@ -10,7 +10,7 @@ func _ready():
     game_map.set_hero(Vector2(7, 7))
 
     spawn_enemies()
-    enemies_telegraph_actions()
+#    enemies_telegraph_actions()
 
     # Hero's turn
 
