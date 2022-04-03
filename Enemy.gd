@@ -10,6 +10,12 @@ var planned_move_position
 
 var game_map
 
+func next_action():
+    # choose a random spot to move to
+    var vms = game_map.get_valid_moves(map_position, 1)[0]
+    var next_pos = vms[randi() % vms.size()]
+    map_position = next_pos
+
 func telegraph_action():
     planned_action = actions.ATTACK
 

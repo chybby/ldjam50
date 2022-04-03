@@ -29,6 +29,10 @@ script = ExtResource( 3 )
 [node name="Shield" type="Node2D" parent="."]
 position = Vector2( 32, 32 )
 script = ExtResource( 2 )
+selected_width = 8
+unselected_width = 6
+radius = 32
+pts = 4
 
 [node name="ShieldPosition" type="Position2D" parent="."]
 position = Vector2( 32, 32 )
