@@ -73,7 +73,7 @@ func place_enemy(enemy, position):
     enemy.map_position = position
 
     enemy.position = map_to_world(position)
-    
+
 func clear_enemies():
     for enemy in enemies.values():
         remove_child(enemy)
@@ -87,7 +87,6 @@ func move_enemy(enemy, position):
     enemy.position = map_to_world(position)
 
 func mouse_down(mouse_position):
-    print('GameMap registered click at map position ', world_to_map(mouse_position))
     emit_signal('cell_clicked', world_to_map(mouse_position))
 
 func _input(event):
@@ -97,5 +96,5 @@ func _input(event):
     if event is InputEventMouseButton:
         if not event.pressed:
             mouse_down(event.position)
-    
-    
+
+

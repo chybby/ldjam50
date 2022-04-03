@@ -1,6 +1,8 @@
-extends Sprite
+extends Node2D
 
 signal move_finished
+signal hero_died
+signal energy_changed(new_energy)
 
 var map_position
 
@@ -73,6 +75,11 @@ func get_shield_angle(position):
         shield_angle_select = PI
     return shield_angle_select
 
+func is_shield_pointing_at_enemy(enemy):
+    var shield_vector = Vector2.RIGHT.rotated(shield_angle)
+    var hero_to_enemy = enemy.position - position
+    return int(hero_to_enemy.angle_to(shield_vector)) == 0
+
 func _process(delta):
     # 3 options for displaying currently selected thingo:
     # - shield
@@ -103,17 +110,21 @@ func _on_GameMap_cell_clicked(position):
             $LaserBeam.play('Fire', true)
             yield($LaserBeam, 'animation_finished')
             $LaserBeam.visible = false
+        var look_vector = game_map.map_to_world(position) - self.position
         var is_valid = game_map.move_hero(position)
         if not is_valid:
             return
+        $Sprite.look_at(self.position + look_vector + Vector2(32, 32))
+        $Sprite.rotation += PI/2
         energy -= 10
+        emit_signal('energy_changed', energy)
         action_done = true
         active_state = STATE_NONE
         previous_state = STATE_MOVE
     elif active_state == STATE_SHIELD:
-        energy -= 5
-        action_done = true
-        shield_angle = shield_angle_select
+        if shield_angle != shield_angle_select:
+            shield_angle = shield_angle_select
+            action_done = true
         active_state = STATE_NONE
         previous_state = STATE_SHIELD
     elif active_state == STATE_WEAPON:
@@ -127,22 +138,19 @@ func _on_GameMap_cell_clicked(position):
         previous_state = STATE_WEAPON
         action_done = true
 
+    if energy <= 0:
+        emit_signal('hero_died')
+
     if action_done:
         emit_signal('move_finished')
-        
-#func shoot_line_laser():
-#    if previous_action == actions.ATTACK_LINE:
-#        # Play the firing animation backwards.
-#        $LaserBeam.play('Fire', true)
-#        yield($LaserBeam, 'animation_finished')
-#        $LaserBeam.visible = false
-#
-#    if planned_action == actions.MOVE:
-#        var vms = game_map.get_valid_moves(map_position, 1)[0]
-#        var next_pos = vms[randi() % vms.size()]
-#        game_map.move_enemy(self, next_pos)
-#    elif planned_action == actions.ATTACK:
-#        $LaserBeam.play('Fire')
-#        yield($LaserBeam, 'animation_finished')
-#        $LaserBeam.play('Persist')
-#    previous_action = planned_action
+
+func _on_Area2D_area_entered(area):
+    #TODO: figure out if this is a weapon or battery. Assume weapon for now.
+    print('Player entered weapon area of enemy: ', area.get_parent().get_parent())
+    var enemy = area.get_parent().get_parent()
+    if is_shield_pointing_at_enemy(enemy):
+        energy -= 20
+        emit_signal('energy_changed', energy)
+    else:
+        position = Vector2(-200, -200)
+        emit_signal('hero_died')
