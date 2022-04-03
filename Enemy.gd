@@ -6,18 +6,11 @@ enum actions {MOVE, ATTACK, NOTHING}
 
 onready var game_map = get_parent()
 
+var previous_action
 var planned_action
 
-func _ready():
-    game_map.hero.connect('move_finished', self, '_on_Player_move_finished')
-
-
-func _on_Player_move_finished():
-    if $LaserBeam.animation == 'Persist':
-        $LaserBeam.visible = false
-
 func telegraph_action():
-    if planned_action == actions.ATTACK:
+    if previous_action == actions.ATTACK:
         if randi() % 2 == 0:
             planned_action = actions.MOVE
         else:
@@ -29,6 +22,8 @@ func telegraph_action():
             planned_action = actions.ATTACK
             $LaserBeam.visible = true
             $LaserBeam.play('Intro')
+            yield($LaserBeam, 'animation_finished')
+            $LaserBeam.play('Telegraph')
 
 #    var tile_map = $Attacks
 
@@ -49,15 +44,18 @@ func telegraph_action():
 #        p.y += 1
 
 func do_action():
+    if previous_action == actions.ATTACK:
+        # Play the firing animation backwards.
+        $LaserBeam.play('Fire', true)
+        yield($LaserBeam, 'animation_finished')
+        $LaserBeam.visible = false
+
     if planned_action == actions.MOVE:
         var vms = game_map.get_valid_moves(map_position, 1)[0]
         var next_pos = vms[randi() % vms.size()]
         game_map.move_enemy(self, next_pos)
     elif planned_action == actions.ATTACK:
         $LaserBeam.play('Fire')
-
-func _on_LaserBeam_animation_finished():
-    if $LaserBeam.animation == 'Fire':
+        yield($LaserBeam, 'animation_finished')
         $LaserBeam.play('Persist')
-    elif $LaserBeam.animation == 'Intro':
-        $LaserBeam.play('Telegraph')
+    previous_action = planned_action
