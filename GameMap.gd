@@ -88,8 +88,6 @@ func mouse_down():
         return
         
 func _process(delta):
-    if hero.active_state == hero.STATE_NONE:
-        hero.clear_valid_moves()
     if hero.active_state == hero.STATE_MOVE:
         var vms = get_valid_moves(hero.map_position, 1)[1]
         for v in vms:
@@ -105,6 +103,7 @@ func _input(event):
                 hero.active_state = hero.STATE_NONE
             elif hero.active_state == hero.STATE_SHIELD:
                 action_done = true
+                hero.shield_angle = hero.shield_angle_select
                 hero.active_state = hero.STATE_NONE
             if action_done:
                 # an action was made by the hero so we need to:
