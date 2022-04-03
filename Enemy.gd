@@ -1,4 +1,4 @@
-extends Sprite
+extends Node2D
 
 var map_position: Vector2
 

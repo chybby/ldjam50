@@ -96,6 +96,9 @@ func clear_enemies():
         remove_child(enemy)
     enemies = {}
 
+func remove_enemy(position):
+    enemies.erase(position)
+
 func move_enemy(enemy, new_position):
     enemies.erase(enemy.map_position)
     enemies[new_position] = enemy

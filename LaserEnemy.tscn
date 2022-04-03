@@ -4,19 +4,19 @@
 [ext_resource path="res://LaserBeam.tscn" type="PackedScene" id=2]
 [ext_resource path="res://LaserEnemy.gd" type="Script" id=3]
 
-[node name="Sprite" instance=ExtResource( 1 )]
+[node name="Enemy" instance=ExtResource( 1 )]
 script = ExtResource( 3 )
 
-[node name="LaserBeamLeft" parent="." index="0" instance=ExtResource( 2 )]
+[node name="LaserBeamLeft" parent="." index="1" instance=ExtResource( 2 )]
 position = Vector2( 0, 64 )
 rotation = 3.14159
 
-[node name="LaserBeamRight" parent="." index="1" instance=ExtResource( 2 )]
+[node name="LaserBeamRight" parent="." index="2" instance=ExtResource( 2 )]
 
-[node name="LaserBeamUp" parent="." index="2" instance=ExtResource( 2 )]
+[node name="LaserBeamUp" parent="." index="3" instance=ExtResource( 2 )]
 position = Vector2( 0, 0 )
 rotation = -1.5708
 
-[node name="LaserBeamDown" parent="." index="3" instance=ExtResource( 2 )]
+[node name="LaserBeamDown" parent="." index="4" instance=ExtResource( 2 )]
 position = Vector2( 64, 64 )
 rotation = 1.5708
