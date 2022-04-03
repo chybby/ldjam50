@@ -4,6 +4,7 @@ var turn = 0
 
 var laser_enemy_scene = preload('res://LaserEnemy.tscn')
 var bomb_enemy_scene = preload('res://BombEnemy.tscn')
+var trash_talking_enemy_scene = preload('res://TrashTalkingEnemy.tscn')
 
 onready var game_map = $GameMap
 onready var map_ui = $MapUI
@@ -77,18 +78,20 @@ func spawn_enemies():
     print('Turn number %s, desired enemies %s, current enemies %s' % [turn, desired_enemies, num_enemies])
     print('Enemies to spawn: ', max(desired_enemies - num_enemies, 0))
     for i in max(desired_enemies - num_enemies, 0):
-        var enemy = bomb_enemy_scene.instance()
+        var enemy = trash_talking_enemy_scene.instance()
         var empty_cells = game_map.get_empty_cells()
         game_map.place_enemy(enemy, empty_cells.keys()[randi() % len(empty_cells)])
 
 func enemies_telegraph_actions():
-    for enemy in game_map.enemies.values():
+    for enemy_position in game_map.enemies.keys():
+        var enemy = game_map.enemies[enemy_position]
         var result = enemy.telegraph_action(turn)
         if result is GDScriptFunctionState:
             yield(result, 'completed')
 
 func enemies_do_actions():
-    for enemy in game_map.enemies.values():
+    for enemy_position in game_map.enemies.keys():
+        var enemy = game_map.enemies[enemy_position]
         var result = enemy.do_action()
         if result is GDScriptFunctionState:
             yield(result, 'completed')
