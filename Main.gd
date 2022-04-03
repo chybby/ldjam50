@@ -55,11 +55,11 @@ func _on_Hero_move_finished():
     if result is GDScriptFunctionState:
         yield(result, 'completed')
 
-    if not game_map.hero.is_alive():
+    if game_map.hero.is_alive():
+        game_map.input_enabled = true
+    else:
         yield(get_tree(), 'idle_frame')
         _on_Hero_move_finished()
-
-    game_map.input_enabled = true
 
 func _on_Hero_died():
     game_map.input_enabled = false
@@ -77,8 +77,8 @@ func spawn_enemies():
     print('Enemies to spawn: ', max(desired_enemies - num_enemies, 0))
     for i in max(desired_enemies - num_enemies, 0):
         var enemy = enemy_scene.instance()
-        # TODO: place enemies in random spots
-        game_map.place_enemy(enemy, Vector2(7, 2))
+        var empty_cells = game_map.get_empty_cells()
+        game_map.place_enemy(enemy, empty_cells.keys()[randi() % len(empty_cells)])
 
 func enemies_telegraph_actions():
     for enemy in game_map.enemies.values():

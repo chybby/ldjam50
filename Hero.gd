@@ -24,10 +24,10 @@ var energy = starting_energy
 
 func draw_valid_moves(valid_moves):
     _draw_valids(valid_moves, 0)
-        
+
 func draw_valid_attacks(valid_attacks):
     _draw_valids(valid_attacks, 1)
-    
+
 func _draw_valids(valids, i):
     var tile_set = $ValidThingos
     for v in valids:
@@ -56,7 +56,7 @@ func _input(event):
         $ValidThingos.clear()
         var vas = game_map.get_valid_line_attacks(map_position)
         draw_valid_attacks(vas)
-        
+
 
     if event is InputEventMouseMotion and active_state == STATE_SHIELD:
         shield_angle_select = get_shield_angle(event.position)
