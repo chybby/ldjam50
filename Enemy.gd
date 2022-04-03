@@ -14,3 +14,8 @@ func telegraph_action(turn):
 
 func do_action():
     pass
+
+
+func _on_Area2D_area_entered(area):
+    game_map.enemies.erase(map_position)
+    queue_free()
