@@ -41,14 +41,10 @@ func get_empty_cells():
 
     return cells
 
-func spawn_hero(position):
-    hero.map_position = position
-    hero.position = map_to_world(position)
-
 func is_empty_space(position):
     if position.x < 0 or position.y < 0 or position.x >= width or position.y >= height:
         return false
-    if enemies.has(position):
+    if enemies.has(position) and enemies[position].prevents_movement():
         return false
     if hero.map_position == position:
         return false
@@ -61,7 +57,6 @@ func is_valid_move(current_position, new_position, max_distance):
 func move_hero(new_position):
     hero.map_position = new_position
     hero.position = map_to_world(new_position)
-    return true
 
 func place_enemy(enemy, position):
     add_child(enemy)
@@ -84,6 +79,13 @@ func move_enemy(enemy, new_position):
 
     enemy.map_position = new_position
     enemy.position = map_to_world(new_position)
+
+func place_pickup(pickup, position):
+    add_child(pickup)
+    #enemies[position] = enemy
+    pickup.map_position = position
+
+    pickup.position = map_to_world(position)
 
 func mouse_down(mouse_position):
     emit_signal('cell_clicked', world_to_map(mouse_position))

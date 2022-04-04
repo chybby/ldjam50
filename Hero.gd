@@ -1,26 +1,55 @@
 extends Node2D
 
-signal move_finished
 signal hero_died
 signal energy_changed(new_energy)
+signal potential_energy_use_changed(new_potential_energy_use)
 
 var map_position
 
-enum state {NONE, SHIELD, WEAPON, MOVE}
+enum state {NONE, SHIELD, LINE_WEAPON, AREA_WEAPON, MOVE}
 var active_state = state.NONE
 var previous_state = state.NONE
 var max_move_distance = 1
 
-#enum action {MOVE, ATTACK_LINE, NOTHING, CHANGE_SHIELD}
-
 onready var game_map = get_parent()
 
-var shield_angle = 0
-var shield_angle_select = 0
+var mouse_map_position = Vector2(7, 3)
+var mouse_angle = -PI/2
+
+var shield_angle = -PI/2
+
+export var line_attack_cost = 1
+export var area_attack_cost = 2
+export var shield_cost = 2
+export var move_cost = 1
 
 # TODO: multiple resources or just one?
-export var starting_energy = 100
+export var starting_energy = 10
 var energy = starting_energy
+
+var playing_turn = false
+var just_finished_turn = false
+var really_finished_turn = false
+
+var is_alive = true
+
+var areas_collided_this_turn = []
+
+func reset():
+    is_alive = true
+    $Sprite.rotation = 0
+    shield_angle = -PI/2
+    $Shield.visible = true
+    $Sprite/LaserBeam.visible = false
+    energy = starting_energy
+    active_state = state.NONE
+    previous_state = state.NONE
+    playing_turn = false
+    just_finished_turn = false
+    really_finished_turn = false
+    areas_collided_this_turn = []
+    mouse_map_position = Vector2(7, 3)
+    mouse_angle = -PI/2
 
 func draw_valid_moves(valid_moves):
     _draw_valids(valid_moves, 1)
@@ -37,125 +66,159 @@ func _draw_valids(valids, i):
 func clear_valid_thingos():
     $ValidThingos.clear()
 
-func is_alive():
-    return energy > 0
-
 func _input(event):
     if not game_map.input_enabled:
         return
 
-    if Input.is_action_pressed("choose_shield"):
+    if Input.is_action_just_pressed("choose_shield"):
         active_state = state.SHIELD
         $ValidThingos.clear()
-    elif Input.is_action_pressed("choose_move"):
+    elif Input.is_action_just_pressed("choose_move"):
         active_state = state.MOVE
         $ValidThingos.clear()
         var vms = game_map.get_valid_moves(map_position, 1)[1]
         draw_valid_moves(vms)
-    elif Input.is_action_pressed("choose_weapon"):
-        active_state = state.WEAPON
-        $ValidThingos.clear()
-        var vas = get_valid_line_attacks(map_position)
-        draw_valid_attacks(vas)
+    elif Input.is_action_just_pressed("choose_line_weapon"):
+        active_state = state.LINE_WEAPON
+    elif Input.is_action_just_pressed("choose_area_weapon"):
+        active_state = state.AREA_WEAPON
 
-    if event is InputEventMouseMotion and active_state == state.SHIELD:
-        shield_angle_select = get_shield_angle(event.position)
+    if event is InputEventMouseMotion:
+        mouse_angle = get_angle(event.position)
+        mouse_map_position = game_map.world_to_map(event.position)
 
-func get_shield_angle(position):
-    shield_angle_select = $ShieldPosition.get_angle_to(position)
-    if shield_angle_select < -3*PI/4:
-        shield_angle_select = PI
-    elif shield_angle_select < -PI/4:
-        shield_angle_select = -PI/2
-    elif shield_angle_select < PI/4:
-        shield_angle_select = 0
-    elif shield_angle_select < 3*PI/4:
-        shield_angle_select = PI/2
+func get_angle(position):
+    var angle_select = $ShieldPosition.get_angle_to(position)
+    if angle_select < -3*PI/4:
+        angle_select = PI
+    elif angle_select < -PI/4:
+        angle_select = -PI/2
+    elif angle_select < PI/4:
+        angle_select = 0
+    elif angle_select < 3*PI/4:
+        angle_select = PI/2
     else:
-        shield_angle_select = PI
-    return shield_angle_select
+        angle_select = PI
+    return angle_select
 
 func is_shield_pointing_at_enemy(enemy):
     var shield_vector = Vector2.RIGHT.rotated(shield_angle)
     var hero_to_enemy = enemy.position - position
-    return int(hero_to_enemy.angle_to(shield_vector)) == 0
+    return round(hero_to_enemy.angle_to(shield_vector)) == 0
+
+func potentially_use_energy(energy):
+    emit_signal('potential_energy_use_changed', energy)
 
 func use_energy(energy_used):
+    var old_energy = energy
+
     energy -= energy_used
+    if energy > starting_energy:
+        energy = starting_energy
+
+    if energy == old_energy:
+        return
+
     emit_signal('energy_changed', energy)
     if energy < 0:
         position = Vector2(-200, -200)
+        is_alive = false
         emit_signal('hero_died')
-    if energy == 0:
+    elif energy == 0:
         $Shield.visible = false
+    else:
+        $Shield.visible = true
 
 func _process(delta):
     if active_state == state.SHIELD:
-        $Shield.rotation = shield_angle_select
+        potentially_use_energy(0)
+        $Shield.rotation = mouse_angle
         $Shield.select()
-    else:
+    elif active_state == state.LINE_WEAPON:
+        potentially_use_energy(line_attack_cost)
+        var look_vector = Vector2.RIGHT.rotated(mouse_angle)
+        look_vector.x = round(look_vector.x)
+        look_vector.y = round(look_vector.y)
+        $Sprite.look_at(position + look_vector + Vector2(32, 32))
+        $Sprite.rotation += PI/2
+        var valids = get_valid_line_attacks(map_position, look_vector)
+        $ValidThingos.clear()
+        draw_valid_attacks(valids)
+    elif active_state == state.AREA_WEAPON:
+        potentially_use_energy(area_attack_cost)
+        var valids = get_valid_area_attacks(map_position, mouse_map_position)
+        $ValidThingos.clear()
+        draw_valid_attacks(valids)
+    elif active_state == state.MOVE:
+        potentially_use_energy(move_cost)
+    elif active_state == state.NONE:
+        potentially_use_energy(0)
+        $ValidThingos.clear()
         $Shield.rotation = shield_angle
         $Shield.unselect()
 
-    if active_state == state.NONE:
-        $ValidThingos.clear()
-
-
-func get_valid_line_attacks(position):
+func get_valid_line_attacks(position, look_vector):
     var valid_moves_rel = []
-    for y in range(-1, -position.y-1, -1):
-        valid_moves_rel.append(Vector2(0, y))
-    for x in range(1, game_map.width - position.x):
-        valid_moves_rel.append(Vector2(x, 0))
-    for y in range(1, game_map.height - position.y):
-        valid_moves_rel.append(Vector2(0, y))
-    for x in range(-1, -position.x-1, -1):
-        valid_moves_rel.append(Vector2(x, 0))
+    if look_vector == Vector2.UP:
+        for y in range(-1, -position.y-1, -1):
+            valid_moves_rel.append(Vector2(0, y))
+    elif look_vector == Vector2.RIGHT:
+        for x in range(1, game_map.width - position.x):
+            valid_moves_rel.append(Vector2(x, 0))
+    elif look_vector == Vector2.DOWN:
+        for y in range(1, game_map.height - position.y):
+            valid_moves_rel.append(Vector2(0, y))
+    elif look_vector == Vector2.LEFT:
+        for x in range(-1, -position.x-1, -1):
+            valid_moves_rel.append(Vector2(x, 0))
 
     return valid_moves_rel
 
-func is_valid_attack(clicked_map_position) -> bool:
-    var vas = get_valid_line_attacks(map_position)
-    var found = false
-    for v in vas:
-        v += map_position
-        if clicked_map_position == v:
-            found = true
-            break
-    return found
+func get_valid_area_attacks(position, mouse_position):
+    var valid_moves_rel = []
+
+    var middle = mouse_position - position
+
+    for x in [-1, 0, 1]:
+        for y in [-1, 0, 1]:
+            var relative = middle + Vector2(x, y)
+            var absolute = relative + position
+            if absolute.x < 0 or absolute.x >= game_map.width:
+                continue
+            if absolute.y < 0 or absolute.y >= game_map.height:
+                continue
+            valid_moves_rel.append(relative)
+
+    return valid_moves_rel
 
 func _on_GameMap_cell_clicked(clicked_map_position):
     var action_done = false
+    areas_collided_this_turn.clear()
     if active_state == state.MOVE:
         if not game_map.is_valid_move(map_position, clicked_map_position, 1):
             game_map.input_enabled = true
             return
 
+        use_energy(move_cost)
         var look_vector = game_map.map_to_world(clicked_map_position) - position
         game_map.move_hero(clicked_map_position)
 
         $Sprite.look_at(position + look_vector + Vector2(32, 32))
         $Sprite.rotation += PI/2
-        use_energy(10)
 
         action_done = true
         active_state = state.NONE
         previous_state = state.MOVE
     elif active_state == state.SHIELD:
-        if shield_angle != shield_angle_select:
-            shield_angle = shield_angle_select
+        if shield_angle != mouse_angle:
+            shield_angle = mouse_angle
             action_done = true
         active_state = state.NONE
         previous_state = state.SHIELD
-    elif active_state == state.WEAPON:
-        if not is_valid_attack(clicked_map_position):
-            game_map.input_enabled = true
-            return
-
+        game_map.input_enabled = true
+    elif active_state == state.LINE_WEAPON:
         active_state = state.NONE
-        var look_vector = game_map.map_to_world(clicked_map_position) - position
-        $Sprite.look_at(position + look_vector + Vector2(32, 32))
-        $Sprite.rotation += PI/2
+        use_energy(line_attack_cost)
 
         # Firing the lazar blarrrrr!
         $Sprite/LaserBeam.visible = true
@@ -170,23 +233,57 @@ func _on_GameMap_cell_clicked(clicked_map_position):
         $Sprite/LaserBeam.visible = false
         $Sprite/LaserBeam.get_node('Area2D/CollisionShape2D').disabled = true
 
-        previous_state = state.WEAPON
+        previous_state = state.LINE_WEAPON
         action_done = true
+    elif active_state == state.AREA_WEAPON:
+        active_state = state.NONE
+        use_energy(area_attack_cost)
+
+        $Node2D/Missile.global_position = game_map.map_to_world(clicked_map_position)
+        $Node2D/Missile.visible = true
+        $Node2D/Missile/Area2D/CollisionShape2D.disabled = false
+        yield(get_tree().create_timer(1.0), 'timeout')
+        $Node2D/Missile.visible = false
+        $Node2D/Missile/Area2D/CollisionShape2D.disabled = true
+
+        previous_state = state.AREA_WEAPON
+        action_done = true
+    elif active_state == state.NONE:
+        game_map.input_enabled = true
 
     if action_done:
-        emit_signal('move_finished')
-        for area in $Area2D.get_overlapping_areas():
-            _on_Area2D_area_entered(area)
+        playing_turn = false
+        just_finished_turn = true
 
-func _on_Area2D_area_entered(area: Area2D):
-    if area.collision_layer == 2:  # Weapons.
-        print('Player entered weapon area of enemy: ', area.get_parent().get_parent())
+func handle_collision(area):
+    areas_collided_this_turn.append(area)
+    print('Player entered area: ', area)
+    print('Area layer: ', area.collision_layer)
+    if area.get_collision_layer_bit(1):  # Weapons.
         var enemy = area.get_parent().get_parent()
+        print('Player entered weapon area of enemy: ', enemy)
         if is_shield_pointing_at_enemy(enemy):
-            use_energy(20)
+            use_energy(shield_cost)
         else:
             position = Vector2(-200, -200)
+            is_alive = false
             emit_signal('hero_died')
-    elif area.collision_layer == 3:  # Pickups.
-        print('Player entered area of pickup: ', area.get_parent().get_parent())
-        pass
+    elif area.get_collision_layer_bit(2):  # Pickups.
+        var pickup = area.get_parent()
+        print('Player entered area of pickup: ', pickup)
+        pickup.pickup_effect()
+        pickup.queue_free()
+
+func handle_collisions():
+    print('handle_collisions overlapping areas: ', $Hitbox.get_overlapping_areas())
+    var areas = $Hitbox.get_overlapping_areas()
+    for area in areas:
+        print('Hero entered area via call from main')
+        if not area in areas_collided_this_turn:
+            handle_collision(area)
+        else:
+            print('Ignoring collision already handled')
+
+func _on_Hitbox_area_entered(area: Area2D):
+    print('Hero entered area via signal')
+    handle_collision(area)
