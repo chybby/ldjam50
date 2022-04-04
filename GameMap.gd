@@ -7,6 +7,7 @@ var height = get_used_rect().size.y
 
 onready var hero = $Hero
 var enemies = {}
+var pickups = {}
 
 var input_enabled = false
 
@@ -66,12 +67,13 @@ func place_enemy(enemy, position):
     enemy.position = map_to_world(position)
 
 func clear_enemies():
-    for enemy in enemies.values():
-        remove_child(enemy)
-    enemies = {}
+    for enemy_position in enemies.keys():
+        remove_enemy(enemy_position)
 
 func remove_enemy(position):
+    var enemy = enemies[position]
     enemies.erase(position)
+    remove_child(enemy)
 
 func move_enemy(enemy, new_position):
     enemies.erase(enemy.map_position)
@@ -82,13 +84,26 @@ func move_enemy(enemy, new_position):
 
 func place_pickup(pickup, position):
     add_child(pickup)
-    #enemies[position] = enemy
+    pickups[position] = pickup
     pickup.map_position = position
 
     pickup.position = map_to_world(position)
 
+func clear_pickups():
+    for pickup_position in pickups.keys():
+        remove_pickup(pickup_position)
+
+func remove_pickup(position):
+    var pickup = pickups[position]
+    pickups.erase(position)
+    remove_child(pickup)
+
 func mouse_down(mouse_position):
-    emit_signal('cell_clicked', world_to_map(mouse_position))
+    var map_position = world_to_map(mouse_position)
+    if map_position.x < 0 or map_position.x >= width or map_position.y < 0 or map_position.y >= height:
+        return
+    input_enabled = false
+    emit_signal('cell_clicked', map_position)
 
 func _input(event):
     if not input_enabled:
@@ -96,5 +111,4 @@ func _input(event):
 
     if event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
         if not event.pressed:
-            input_enabled = false
             mouse_down(event.position)

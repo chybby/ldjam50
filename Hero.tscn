@@ -177,4 +177,6 @@ shape = SubResource( 2 )
 [node name="Missile" parent="Node2D" instance=ExtResource( 7 )]
 visible = false
 
+[node name="Tween" type="Tween" parent="."]
+
 [connection signal="area_entered" from="Hitbox" to="." method="_on_Hitbox_area_entered"]

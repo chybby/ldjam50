@@ -19,7 +19,6 @@ func do_action():
         $Emp.play('Intro', true)
         yield($Emp, 'animation_finished')
         game_map.remove_enemy(map_position)
-        queue_free()
     explosion_countdown -= 1
 
 func prevents_movement():

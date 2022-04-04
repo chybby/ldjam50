@@ -19,9 +19,9 @@ margin_bottom = 40.0
 
 [node name="Buttons" type="HBoxContainer" parent="."]
 margin_left = 683.0
-margin_top = 634.0
+margin_top = 649.0
 margin_right = 951.0
-margin_bottom = 698.0
+margin_bottom = 713.0
 
 [node name="LaserButton" type="TextureButton" parent="Buttons"]
 margin_right = 64.0
@@ -48,9 +48,9 @@ texture_normal = ExtResource( 10 )
 
 [node name="Battery" type="TextureRect" parent="."]
 margin_left = 6.0
-margin_top = 634.0
+margin_top = 649.0
 margin_right = 182.0
-margin_bottom = 698.0
+margin_bottom = 713.0
 texture = ExtResource( 7 )
 script = ExtResource( 5 )
 high_color = Color( 0.243137, 1, 0, 1 )
@@ -146,9 +146,9 @@ color = Color( 1, 0, 0, 1 )
 
 [node name="TurnLabel" type="Label" parent="."]
 margin_left = 182.0
-margin_top = 649.0
+margin_top = 664.0
 margin_right = 268.0
-margin_bottom = 682.0
+margin_bottom = 697.0
 custom_fonts/font = SubResource( 1 )
 text = "Turn: 0"
 

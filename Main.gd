@@ -24,10 +24,14 @@ func _ready():
     game_map.hero.connect('energy_changed', self, '_on_Hero_energy_changed')
     game_map.hero.connect('potential_energy_use_changed', self, '_on_Hero_potential_energy_use_changed')
 
+    map_ui.get_node('Buttons/LaserButton').connect('pressed', game_map.hero, '_on_LaserButton_pressed')
+    map_ui.get_node('Buttons/MissileButton').connect('pressed', game_map.hero, '_on_MissileButton_pressed')
+    map_ui.get_node('Buttons/MoveButton').connect('pressed', game_map.hero, '_on_MoveButton_pressed')
+    map_ui.get_node('Buttons/ShieldButton').connect('pressed', game_map.hero, '_on_ShieldButton_pressed')
+
     reset_game()
 
 func reset_game():
-    game_map.clear_enemies()
     current_turn = 0
     turn_label.text = 'Turn: 1'
 
@@ -36,8 +40,10 @@ func reset_game():
 
     game_map.move_hero(Vector2(7, 7))
     game_map.hero.reset()
+    game_map.clear_enemies()
+    game_map.clear_pickups()
 
-    battery.set_energy(10)
+    battery.set_energy(game_map.hero.starting_energy)
 
     whose_turn = turn.ENEMY_SPAWN
     active_enemy_index = 0
@@ -69,6 +75,9 @@ func _physics_process(delta):
     elif whose_turn == turn.HERO:
         var hero = game_map.hero
 
+        if hero.playing_turn:
+            return
+
         if hero.just_finished_turn:
             hero.just_finished_turn = false
             hero.really_finished_turn = true
@@ -81,9 +90,6 @@ func _physics_process(delta):
             whose_turn = turn.ENEMY_ACTION
             enemies_turn_order = game_map.enemies.values()
             #print('Enemy turn order: ', enemies_turn_order)
-            return
-
-        if hero.playing_turn:
             return
 
         # Let the player take their turn.
@@ -100,6 +106,10 @@ func _physics_process(delta):
             return
 
         var active_enemy = enemies_turn_order[active_enemy_index]
+        if not is_instance_valid(active_enemy):
+            active_enemy_index += 1
+            return
+
         if active_enemy.just_finished_turn:
             active_enemy_index += 1
             active_enemy.just_finished_turn = false
@@ -135,6 +145,13 @@ func spawn_enemies():
     print('Turn number %s, desired enemies %s, current enemies %s' % [current_turn, desired_enemies, num_enemies])
     print('Enemies to spawn: ', max(desired_enemies - num_enemies, 0))
     for i in max(desired_enemies - num_enemies, 0):
-        var enemy = trash_talking_enemy_scene.instance()
+        var percent = randi() % 100
+        var enemy
+        if percent < 20:
+            enemy = trash_talking_enemy_scene.instance()
+        elif percent < 70:
+            enemy = laser_enemy_scene.instance()
+        else:
+            enemy = bomb_enemy_scene.instance()
         var empty_cells = game_map.get_empty_cells()
         game_map.place_enemy(enemy, empty_cells.keys()[randi() % len(empty_cells)])

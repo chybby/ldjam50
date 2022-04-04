@@ -21,4 +21,6 @@ monitorable = false
 position = Vector2( 32, 32 )
 shape = SubResource( 1 )
 
+[node name="Tween" type="Tween" parent="."]
+
 [connection signal="area_entered" from="Hitbox" to="." method="_on_Hitbox_area_entered"]

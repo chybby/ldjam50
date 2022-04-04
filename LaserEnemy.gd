@@ -77,6 +77,14 @@ func do_action():
         if len(vms) == 0:
             return
         var next_pos = vms[randi() % vms.size()]
+
+        var tween = $Tween
+        tween.interpolate_property(self, "position",
+                position, game_map.map_to_world(next_pos), 1,
+                Tween.TRANS_QUINT, Tween.EASE_IN_OUT)
+        tween.start()
+        yield(tween, 'tween_completed')
+
         game_map.move_enemy(self, next_pos)
     elif planned_action == action.ATTACK:
         var results = []

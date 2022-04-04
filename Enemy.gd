@@ -46,10 +46,9 @@ func _on_Hitbox_area_entered(area):
         if hero != game_map.hero:
             return
         print('Enemy entered weapon area of hero: ', hero)
-        game_map.enemies.erase(map_position)
+        game_map.remove_enemy(map_position)
         var pickup = pickup_scene.instance()
         game_map.place_pickup(pickup, map_position)
-        queue_free()
     elif area.get_collision_layer_bit(2):  # Pickups.
         var pickup = area.get_parent()
         print('Enemy entered area of pickup: ', pickup)

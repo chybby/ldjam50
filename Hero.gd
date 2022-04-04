@@ -71,21 +71,31 @@ func _input(event):
         return
 
     if Input.is_action_just_pressed("choose_shield"):
-        active_state = state.SHIELD
-        $ValidThingos.clear()
+        activate_state(state.SHIELD)
     elif Input.is_action_just_pressed("choose_move"):
-        active_state = state.MOVE
-        $ValidThingos.clear()
-        var vms = game_map.get_valid_moves(map_position, 1)[1]
-        draw_valid_moves(vms)
+        activate_state(state.MOVE)
     elif Input.is_action_just_pressed("choose_line_weapon"):
-        active_state = state.LINE_WEAPON
+        activate_state(state.LINE_WEAPON)
     elif Input.is_action_just_pressed("choose_area_weapon"):
-        active_state = state.AREA_WEAPON
+        activate_state(state.AREA_WEAPON)
 
     if event is InputEventMouseMotion:
         mouse_angle = get_angle(event.position)
         mouse_map_position = game_map.world_to_map(event.position)
+
+func activate_state(new_state):
+    if new_state == state.SHIELD:
+        active_state = state.SHIELD
+        $ValidThingos.clear()
+    elif new_state == state.MOVE:
+        active_state = state.MOVE
+        $ValidThingos.clear()
+        var vms = game_map.get_valid_moves(map_position, 1)[1]
+        draw_valid_moves(vms)
+    elif new_state == state.LINE_WEAPON:
+        active_state = state.LINE_WEAPON
+    elif new_state == state.AREA_WEAPON:
+        active_state = state.AREA_WEAPON
 
 func get_angle(position):
     var angle_select = $ShieldPosition.get_angle_to(position)
@@ -134,7 +144,11 @@ func _process(delta):
         potentially_use_energy(0)
         $Shield.rotation = mouse_angle
         $Shield.select()
-    elif active_state == state.LINE_WEAPON:
+    else:
+        $Shield.rotation = shield_angle
+        $Shield.unselect()
+
+    if active_state == state.LINE_WEAPON:
         potentially_use_energy(line_attack_cost)
         var look_vector = Vector2.RIGHT.rotated(mouse_angle)
         look_vector.x = round(look_vector.x)
@@ -154,8 +168,6 @@ func _process(delta):
     elif active_state == state.NONE:
         potentially_use_energy(0)
         $ValidThingos.clear()
-        $Shield.rotation = shield_angle
-        $Shield.unselect()
 
 func get_valid_line_attacks(position, look_vector):
     var valid_moves_rel = []
@@ -198,13 +210,37 @@ func _on_GameMap_cell_clicked(clicked_map_position):
         if not game_map.is_valid_move(map_position, clicked_map_position, 1):
             game_map.input_enabled = true
             return
+        $ValidThingos.clear()
 
         use_energy(move_cost)
         var look_vector = game_map.map_to_world(clicked_map_position) - position
-        game_map.move_hero(clicked_map_position)
+        var tween = $Tween
 
+        print($Sprite.rotation)
+        var current_rotation = $Sprite.rotation
         $Sprite.look_at(position + look_vector + Vector2(32, 32))
         $Sprite.rotation += PI/2
+        var desired_rotation = $Sprite.rotation
+
+        if abs(desired_rotation - current_rotation) > abs(desired_rotation - 2*PI - current_rotation):
+            desired_rotation -= 2*PI
+        elif abs(desired_rotation - current_rotation) > abs(desired_rotation + 2*PI - current_rotation):
+            desired_rotation += 2*PI
+
+        if current_rotation != desired_rotation:
+            tween.interpolate_property($Sprite, "rotation",
+                    current_rotation, desired_rotation, 1,
+                    Tween.TRANS_QUINT, Tween.EASE_IN_OUT)
+            tween.start()
+            yield(tween, 'tween_completed')
+
+        tween.interpolate_property(self, "position",
+                position, game_map.map_to_world(clicked_map_position), 1,
+                Tween.TRANS_QUINT, Tween.EASE_IN_OUT)
+        tween.start()
+        yield(tween, 'tween_completed')
+
+        game_map.move_hero(clicked_map_position)
 
         action_done = true
         active_state = state.NONE
@@ -272,7 +308,7 @@ func handle_collision(area):
         var pickup = area.get_parent()
         print('Player entered area of pickup: ', pickup)
         pickup.pickup_effect()
-        pickup.queue_free()
+        game_map.remove_pickup(pickup.map_position)
 
 func handle_collisions():
     print('handle_collisions overlapping areas: ', $Hitbox.get_overlapping_areas())
@@ -287,3 +323,27 @@ func handle_collisions():
 func _on_Hitbox_area_entered(area: Area2D):
     print('Hero entered area via signal')
     handle_collision(area)
+
+func _on_LaserButton_pressed():
+    if not game_map.input_enabled:
+        return
+
+    activate_state(state.LINE_WEAPON)
+
+func _on_MissileButton_pressed():
+    if not game_map.input_enabled:
+        return
+
+    activate_state(state.AREA_WEAPON)
+
+func _on_MoveButton_pressed():
+    if not game_map.input_enabled:
+        return
+
+    activate_state(state.MOVE)
+
+func _on_ShieldButton_pressed():
+    if not game_map.input_enabled:
+        return
+
+    activate_state(state.SHIELD)
