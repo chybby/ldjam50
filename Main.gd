@@ -23,6 +23,7 @@ func _ready():
     game_map.hero.connect('hero_died', self, '_on_Hero_died')
     game_map.hero.connect('energy_changed', self, '_on_Hero_energy_changed')
     game_map.hero.connect('potential_energy_use_changed', self, '_on_Hero_potential_energy_use_changed')
+    $Music.play()
 
     reset_game()
 
