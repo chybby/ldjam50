@@ -1,22 +1,23 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://Background.tscn" type="PackedScene" id=2]
 [ext_resource path="res://GameMap.tscn" type="PackedScene" id=3]
 [ext_resource path="res://MapUI.tscn" type="PackedScene" id=4]
 [ext_resource path="res://GameOver.tscn" type="PackedScene" id=5]
-[ext_resource path="res://grid-scaled.png" type="Texture" id=6]
+[ext_resource path="res://bgmusic.wav" type="AudioStream" id=6]
+[ext_resource path="res://grid-scaled.png" type="Texture" id=7]
 
 [sub_resource type="AtlasTexture" id=1]
-atlas = ExtResource( 6 )
+atlas = ExtResource( 7 )
 region = Rect2( 0, 0, 960, 640 )
 
 [sub_resource type="AtlasTexture" id=2]
-atlas = ExtResource( 6 )
+atlas = ExtResource( 7 )
 region = Rect2( 0, 640, 960, 640 )
 
 [sub_resource type="AtlasTexture" id=3]
-atlas = ExtResource( 6 )
+atlas = ExtResource( 7 )
 region = Rect2( 0, 1280, 960, 640 )
 
 [sub_resource type="SpriteFrames" id=4]
@@ -26,6 +27,7 @@ animations = [ {
 "name": "default",
 "speed": 5.0
 } ]
+
 
 [node name="Game" type="Node2D"]
 script = ExtResource( 1 )
@@ -46,3 +48,6 @@ frames = SubResource( 4 )
 frame = 1
 playing = true
 centered = false
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 6 )

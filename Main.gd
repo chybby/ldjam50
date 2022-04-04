@@ -23,6 +23,7 @@ func _ready():
     game_map.hero.connect('hero_died', self, '_on_Hero_died')
     game_map.hero.connect('energy_changed', self, '_on_Hero_energy_changed')
     game_map.hero.connect('potential_energy_use_changed', self, '_on_Hero_potential_energy_use_changed')
+    $Music.play()
 
     map_ui.get_node('Buttons/LaserButton').connect('pressed', game_map.hero, '_on_LaserButton_pressed')
     map_ui.get_node('Buttons/MissileButton').connect('pressed', game_map.hero, '_on_MissileButton_pressed')

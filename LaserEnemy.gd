@@ -50,6 +50,7 @@ func play_laser_telegraph(laser):
     laser.play('Telegraph')
 
 func play_laser_fire(laser):
+    $Attack.play()
     laser.play('Fire')
     yield(laser, 'animation_finished')
     laser.get_node('Area2D/CollisionShape2D').disabled = false

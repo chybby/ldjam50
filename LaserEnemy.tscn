@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Enemy.tscn" type="PackedScene" id=1]
 [ext_resource path="res://LaserBeam.tscn" type="PackedScene" id=2]
 [ext_resource path="res://LaserEnemy.gd" type="Script" id=3]
+[ext_resource path="res://enemy_laser.wav" type="AudioStream" id=4]
 
 [node name="Enemy" instance=ExtResource( 1 )]
 script = ExtResource( 3 )
@@ -20,3 +21,6 @@ rotation = -1.5708
 [node name="LaserBeamDown" parent="." index="4" instance=ExtResource( 2 )]
 position = Vector2( 64, 64 )
 rotation = 1.5708
+
+[node name="Attack" type="AudioStreamPlayer" parent="." index="6"]
+stream = ExtResource( 4 )
