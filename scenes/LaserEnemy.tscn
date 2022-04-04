@@ -1,0 +1,52 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://scenes/Enemy.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/LaserBeam.tscn" type="PackedScene" id=2]
+[ext_resource path="res://assets/enemy_laser.wav" type="AudioStream" id=3]
+[ext_resource path="res://scripts/LaserEnemy.gd" type="Script" id=4]
+[ext_resource path="res://assets/laser_enemy-scaled.png" type="Texture" id=5]
+
+[sub_resource type="AtlasTexture" id=1]
+atlas = ExtResource( 5 )
+region = Rect2( 0, 0, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=2]
+atlas = ExtResource( 5 )
+region = Rect2( 0, 64, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=3]
+atlas = ExtResource( 5 )
+region = Rect2( 0, 128, 64, 64 )
+
+[sub_resource type="SpriteFrames" id=4]
+animations = [ {
+"frames": [ SubResource( 1 ), SubResource( 2 ), SubResource( 3 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
+
+[node name="Enemy" instance=ExtResource( 1 )]
+script = ExtResource( 4 )
+
+[node name="Sprite" parent="." index="0"]
+frames = SubResource( 4 )
+frame = 2
+playing = true
+
+[node name="LaserBeamLeft" parent="." index="1" instance=ExtResource( 2 )]
+position = Vector2( 0, 64 )
+rotation = 3.14159
+
+[node name="LaserBeamRight" parent="." index="2" instance=ExtResource( 2 )]
+
+[node name="LaserBeamUp" parent="." index="3" instance=ExtResource( 2 )]
+position = Vector2( 0, 0 )
+rotation = -1.5708
+
+[node name="LaserBeamDown" parent="." index="4" instance=ExtResource( 2 )]
+position = Vector2( 64, 64 )
+rotation = 1.5708
+
+[node name="Attack" type="AudioStreamPlayer" parent="." index="6"]
+stream = ExtResource( 3 )

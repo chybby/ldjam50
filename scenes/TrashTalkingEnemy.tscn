@@ -1,0 +1,81 @@
+[gd_scene load_steps=15 format=2]
+
+[ext_resource path="res://assets/Bungee-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://scenes/Enemy.tscn" type="PackedScene" id=2]
+[ext_resource path="res://scripts/TrashTalkingEnemy.gd" type="Script" id=3]
+[ext_resource path="res://assets/trash_talking_enemy-scaled.png" type="Texture" id=4]
+[ext_resource path="res://assets/speech_bubble-scaled.png" type="Texture" id=5]
+
+[sub_resource type="AtlasTexture" id=7]
+atlas = ExtResource( 4 )
+region = Rect2( 0, 0, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=8]
+atlas = ExtResource( 4 )
+region = Rect2( 0, 64, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=9]
+atlas = ExtResource( 4 )
+region = Rect2( 0, 128, 64, 64 )
+
+[sub_resource type="AtlasTexture" id=10]
+atlas = ExtResource( 4 )
+region = Rect2( 0, 192, 64, 64 )
+
+[sub_resource type="SpriteFrames" id=11]
+animations = [ {
+"frames": [ SubResource( 7 ), SubResource( 8 ), SubResource( 9 ), SubResource( 10 ) ],
+"loop": true,
+"name": "default",
+"speed": 5.0
+} ]
+
+[sub_resource type="DynamicFontData" id=3]
+font_path = "res://assets/Bungee-Regular.ttf"
+
+[sub_resource type="DynamicFont" id=5]
+size = 32
+outline_color = Color( 0, 0, 0, 1 )
+use_filter = true
+font_data = SubResource( 3 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 20
+use_filter = true
+font_data = ExtResource( 1 )
+
+[sub_resource type="Theme" id=4]
+Button/fonts/font = SubResource( 5 )
+Label/fonts/font = SubResource( 6 )
+
+[node name="Enemy" instance=ExtResource( 2 )]
+script = ExtResource( 3 )
+
+[node name="Sprite" parent="." index="0"]
+frames = SubResource( 11 )
+frame = 1
+playing = true
+
+[node name="SpeechBubble" type="Sprite" parent="." index="1"]
+visible = false
+position = Vector2( 235, -39 )
+z_index = 4
+texture = ExtResource( 5 )
+
+[node name="Label" type="Label" parent="SpeechBubble" index="0"]
+margin_left = -171.0
+margin_top = -54.0
+margin_right = 175.0
+margin_bottom = 56.0
+theme = SubResource( 4 )
+custom_colors/font_color = Color( 0.439216, 0.439216, 0.47451, 1 )
+text = "Just give up, there's only one of you and and endless army of us!"
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Timer" type="Timer" parent="." index="2"]
+wait_time = 4.0
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
