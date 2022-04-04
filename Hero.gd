@@ -199,6 +199,7 @@ func _on_GameMap_cell_clicked(clicked_map_position):
             game_map.input_enabled = true
             return
 
+        $MoveSound.play()
         use_energy(move_cost)
         var look_vector = game_map.map_to_world(clicked_map_position) - position
         game_map.move_hero(clicked_map_position)
@@ -211,6 +212,7 @@ func _on_GameMap_cell_clicked(clicked_map_position):
         previous_state = state.MOVE
     elif active_state == state.SHIELD:
         if shield_angle != mouse_angle:
+            $ShieldSelectSound.play()
             shield_angle = mouse_angle
             action_done = true
         active_state = state.NONE
@@ -221,6 +223,7 @@ func _on_GameMap_cell_clicked(clicked_map_position):
         use_energy(line_attack_cost)
 
         # Firing the lazar blarrrrr!
+        $LineAttackSound.play()
         $Sprite/LaserBeam.visible = true
         $Sprite/LaserBeam.stop()
         $Sprite/LaserBeam.play('Fire')
@@ -236,6 +239,7 @@ func _on_GameMap_cell_clicked(clicked_map_position):
         previous_state = state.LINE_WEAPON
         action_done = true
     elif active_state == state.AREA_WEAPON:
+        $AreaAttackSound.play()
         active_state = state.NONE
         use_energy(area_attack_cost)
 
@@ -271,6 +275,7 @@ func handle_collision(area):
     elif area.get_collision_layer_bit(2):  # Pickups.
         var pickup = area.get_parent()
         print('Player entered area of pickup: ', pickup)
+        $Pickup.play()
         pickup.pickup_effect()
         pickup.queue_free()
 
