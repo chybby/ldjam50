@@ -113,7 +113,7 @@ func _physics_process(delta):
         game_map.set_input_enabled(true)
 
     elif whose_turn == turn.ENEMY_ACTION:
-        if active_enemy_index >= len(game_map.enemies):
+        if active_enemy_index >= len(enemies_turn_order):
             active_enemy_index = 0
             whose_turn = turn.ENEMY_SPAWN
             current_turn += 1

@@ -98,7 +98,7 @@ func do_action():
     previous_action = planned_action
 
 func _on_Area2D_area_entered(area):
-    # TODO: dunno what the while stuff is when a laser enemy dies.
+    # TODO: dunno what the white stuff is when a laser enemy dies.
     for laser in all_lasers:
         laser.stop()
         laser.visible = false
